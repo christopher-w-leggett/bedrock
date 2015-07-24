@@ -42,7 +42,7 @@ final class ComponentServletBindings implements Bindings {
 
         def currentPage = request.currentPage
         def currentDesign = designer.getDesign(currentPage)
-        def currentStyle = !componentContext || !currentDesign ? null : currentDesign.getStyle(componentContext.cell)
+        def currentStyle = !componentContext || !currentDesign || !componentContext.cell ? null : currentDesign.getStyle(componentContext.cell)
 
         map.put(CURRENT_DESIGN, currentDesign)
         map.put(CURRENT_STYLE, currentStyle)
