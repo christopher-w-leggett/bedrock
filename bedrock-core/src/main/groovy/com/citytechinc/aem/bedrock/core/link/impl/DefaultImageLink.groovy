@@ -7,7 +7,8 @@ import groovy.transform.Immutable
 @Immutable(knownImmutableClasses = [Link])
 class DefaultImageLink implements ImageLink {
 
-    @Delegate Link link
+    @Delegate
+    Link link
 
     String imageSource
 }

@@ -9,6 +9,7 @@ import org.apache.sling.api.resource.Resource;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
+import javax.jcr.RepositoryException;
 import java.util.List;
 
 /**
@@ -66,8 +67,9 @@ public interface BasicNode extends Linkable, ImageSource, Accessible {
      *
      * @param predicate predicate to apply
      * @return filtered list of properties or empty list if no properties of this node apply for the given predicate
+     * @throws RepositoryException if error occurs reading node properties
      */
-    List<Property> getProperties(Predicate<Property> predicate);
+    List<Property> getProperties(Predicate<Property> predicate) throws RepositoryException;
 
     /**
      * Get the underlying resource for this instance.

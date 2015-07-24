@@ -24,7 +24,7 @@ public enum TitleType {
 
     private final String propertyName;
 
-    private TitleType(final String propertyName) {
+    TitleType(final String propertyName) {
         this.propertyName = propertyName;
     }
 

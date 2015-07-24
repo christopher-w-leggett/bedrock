@@ -1,16 +1,54 @@
 package com.citytechinc.aem.bedrock.api.request;
 
+import com.citytechinc.aem.bedrock.api.node.ComponentNode;
+import com.citytechinc.aem.bedrock.api.page.PageDecorator;
+import com.citytechinc.aem.bedrock.api.page.PageManagerDecorator;
 import com.day.cq.wcm.api.WCMMode;
 import com.google.common.base.Optional;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
 
+import javax.jcr.Node;
+import javax.jcr.Session;
 import java.util.List;
 
 /**
  * Request facade for use in CQ servlets and component beans.
  */
-public interface ComponentServletRequest extends ComponentResourceRequest {
+public interface ComponentServletRequest {
+
+    /**
+     * @return component node for the current resource
+     */
+    ComponentNode getComponentNode();
+
+    /**
+     * @return current JCR node
+     */
+    Node getCurrentNode();
+
+    /**
+     * @return current CQ page
+     */
+    PageDecorator getCurrentPage();
+
+    /**
+     * @return page manager bound to the current request
+     */
+    PageManagerDecorator getPageManager();
+
+    /**
+     * @return property map for the current page
+     */
+    ValueMap getPageProperties();
+
+    /**
+     * @return property map for the current resource
+     */
+    ValueMap getProperties();
 
     /**
      * Retrieve a parameter from the request or return an absent <code>Optional</code> if it does not exist.
@@ -40,9 +78,24 @@ public interface ComponentServletRequest extends ComponentResourceRequest {
     String getRequestParameter(String parameterName, String defaultValue);
 
     /**
+     * @return resource
+     */
+    Resource getResource();
+
+    /**
+     * @return resource resolver
+     */
+    ResourceResolver getResourceResolver();
+
+    /**
      * @return Sling request selectors or empty array if the request has no selectors
      */
     List<String> getSelectors();
+
+    /**
+     * @return JCR session bound to this request
+     */
+    Session getSession();
 
     /**
      * @return Sling servlet request

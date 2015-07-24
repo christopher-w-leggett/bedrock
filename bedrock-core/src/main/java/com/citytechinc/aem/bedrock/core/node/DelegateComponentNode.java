@@ -13,6 +13,7 @@ import org.apache.sling.api.resource.ValueMap;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
+import javax.jcr.RepositoryException;
 import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
@@ -144,7 +145,8 @@ public abstract class DelegateComponentNode implements ComponentNode {
     }
 
     @Override
-    public final <AdapterType> Optional<AdapterType> getAsType(final String propertyName, final Class<AdapterType> type) {
+    public final <AdapterType> Optional<AdapterType> getAsType(final String propertyName,
+        final Class<AdapterType> type) {
         return componentNode.getAsType(propertyName, type);
     }
 
@@ -346,7 +348,7 @@ public abstract class DelegateComponentNode implements ComponentNode {
     }
 
     @Override
-    public final List<Property> getProperties(final Predicate<Property> predicate) {
+    public final List<Property> getProperties(final Predicate<Property> predicate) throws RepositoryException {
         return componentNode.getProperties(predicate);
     }
 

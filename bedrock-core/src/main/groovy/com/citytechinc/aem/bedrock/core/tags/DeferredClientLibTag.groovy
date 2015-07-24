@@ -21,12 +21,12 @@ final class DeferredClientLibTag extends AbstractDeferredClientLibTag {
 
         def uniqueCategories = new LinkedHashSet<String>(requestCategories)
 
-        LOG.debug "writing deferred client libraries = {}", uniqueCategories
+        LOG.debug("writing deferred client libraries = {}", uniqueCategories)
 
         try {
             htmlLibraryManager.writeJsInclude(slingRequest, pageContext.out, uniqueCategories as String[])
         } catch (IOException e) {
-            LOG.error "error writing deferred client libraries = $uniqueCategories", e
+            LOG.error("error writing deferred client libraries = $uniqueCategories", e)
 
             throw new JspTagException(e)
         }

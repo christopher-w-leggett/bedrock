@@ -21,8 +21,9 @@ abstract class AbstractNode {
 
     protected <AdapterType> Optional<AdapterType> getAsTypeOptional(String path, Class<AdapterType> type) {
         def resource = path ? resourceInternal.resourceResolver.getResource(path) : null
+        def result = (type == Resource ? resource : resource?.adaptTo(type)) as AdapterType
 
-        Optional.fromNullable(type == Resource ? resource : resource?.adaptTo(type))
+        Optional.fromNullable(result)
     }
 
     protected Optional<Link> getLinkOptional(Optional<String> pathOptional, boolean strict, boolean mapped) {

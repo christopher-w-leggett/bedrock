@@ -46,7 +46,7 @@ class SelectiveReplicationServlet extends AbstractJsonResponseServlet {
         def action = request.getParameter(PARAMETER_ACTION)
         def actionType = ReplicationActionType.fromName(action)
 
-        checkArgument(actionType as Boolean, "invalid action parameter = $action")
+        checkArgument(actionType as Boolean, "invalid action parameter = %s", action)
 
         def options = getReplicationOptions(agentIds)
 

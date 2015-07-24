@@ -11,11 +11,12 @@ import static com.google.common.base.Preconditions.checkArgument
  */
 abstract class AbstractScopedTag extends TagSupport {
 
-    private static final def SCOPES = [
+    private static final Map<String, Integer> SCOPES = [
         "page"       : PageContext.PAGE_SCOPE,
         "request"    : PageContext.REQUEST_SCOPE,
         "session"    : PageContext.SESSION_SCOPE,
-        "application": PageContext.APPLICATION_SCOPE]
+        "application": PageContext.APPLICATION_SCOPE
+    ]
 
     /**
      * Scope of instance in page context.  Defaults to "page".

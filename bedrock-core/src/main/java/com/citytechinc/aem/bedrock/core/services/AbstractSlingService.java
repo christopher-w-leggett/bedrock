@@ -13,11 +13,10 @@ import javax.jcr.Session;
 import java.util.Map;
 
 /**
- * Base class for services that require an administrative <code>Session</code> and/or
- * <code>ResourceResolver</code>.
+ * Base class for services that require an administrative <code>Session</code> and/or <code>ResourceResolver</code>.
  */
 @Component(componentAbstract = true)
-@SuppressWarnings("deprecated")
+@SuppressWarnings("deprecation")
 public abstract class AbstractSlingService {
 
     @Reference
@@ -31,23 +30,20 @@ public abstract class AbstractSlingService {
     protected Session session;
 
     /**
-     * Activate this service.  Extending classes should call <code>getAdministrativeResourceResolver()</code>
-     * and/or <code>getAdministrativeSession()</code> in this method.
+     * Activate this service. Extending classes should call <code>getAdministrativeResourceResolver()</code> and/or
+     * <code>getAdministrativeSession()</code> in this method.
      */
-    protected abstract void activate(final ComponentContext componentContext,
-        final Map<String, Object> properties);
+    protected abstract void activate(final ComponentContext componentContext, final Map<String, Object> properties);
 
     /**
-     * Deactivate this service.  Extending classes should call <code>closeResourceResolver()</code>
-     * and <code>closeSession()</code> in this method.
+     * Deactivate this service. Extending classes should call <code>closeResourceResolver()</code> and
+     * <code>closeSession()</code> in this method.
      */
-    protected abstract void deactivate(final ComponentContext componentContext,
-        final Map<String, Object> properties);
+    protected abstract void deactivate(final ComponentContext componentContext, final Map<String, Object> properties);
 
     /**
-     * Close the administrative resource resolver.  This method should be called by the
-     * <code>@Deactivate</code> method of the implementing class if the
-     * <code>getAdministrativeResourceResolver()</code> method was used at any time.
+     * Close the administrative resource resolver. This method should be called by the <code>@Deactivate</code> method
+     * of the implementing class if the <code>getAdministrativeResourceResolver()</code> method was used at any time.
      */
     protected final void closeResourceResolver() {
         if (resourceResolver != null) {
@@ -56,9 +52,8 @@ public abstract class AbstractSlingService {
     }
 
     /**
-     * Close the administrative session.  This method should be called by the
-     * <code>@Deactivate</code> method of the implementing class if the
-     * <code>getAdministrativeSession()</code> method was used at any time.
+     * Close the administrative session. This method should be called by the <code>@Deactivate</code> method of the
+     * implementing class if the <code>getAdministrativeSession()</code> method was used at any time.
      */
     protected final void closeSession() {
         if (session != null) {

@@ -108,7 +108,7 @@ final class DefaultComponentNode extends AbstractNode implements ComponentNode {
     }
 
     @Override
-    public <T> List<T> getAsListInherited(String propertyName, Class<T> type) {
+    <T> List<T> getAsListInherited(String propertyName, Class<T> type) {
         properties.getInherited(checkNotNull(propertyName), Array.newInstance(type, 0)) as List
     }
 
@@ -118,7 +118,7 @@ final class DefaultComponentNode extends AbstractNode implements ComponentNode {
     }
 
     @Override
-    public <AdapterType> Optional<AdapterType> getAsTypeInherited(String propertyName, Class<AdapterType> type) {
+    <AdapterType> Optional<AdapterType> getAsTypeInherited(String propertyName, Class<AdapterType> type) {
         getAsTypeOptional(properties.getInherited(checkNotNull(propertyName), ""), type)
     }
 
@@ -142,7 +142,6 @@ final class DefaultComponentNode extends AbstractNode implements ComponentNode {
     @Override
     List<ComponentNode> getComponentNodes(String relativePath) {
         def child = resource.getChild(checkNotNull(relativePath))
-
         def nodes
 
         if (child) {
@@ -167,7 +166,6 @@ final class DefaultComponentNode extends AbstractNode implements ComponentNode {
     @Override
     Optional<BasicNode> getDesignNode() {
         def resourceResolver = resource.resourceResolver
-
         def style = resourceResolver.adaptTo(Designer).getStyle(resource)
         def styleResource = resourceResolver.getResource(style.getPath())
 
@@ -271,7 +269,7 @@ final class DefaultComponentNode extends AbstractNode implements ComponentNode {
         def relativePath = resource.name.equals(JcrConstants.JCR_CONTENT) ? "" : path.substring(
             containingPage.contentResource.path.length() + 1)
 
-        LOG.debug "relative path = {}", relativePath
+        LOG.debug("relative path = {}", relativePath)
 
         def componentNodeFunction = new Function<PageDecorator, Optional<ComponentNode>>() {
             @Override
@@ -314,7 +312,7 @@ final class DefaultComponentNode extends AbstractNode implements ComponentNode {
         // path relative to jcr:content
         def resourcePath = builder.toString()
 
-        LOG.debug "child resource relative path = {}", resourcePath
+        LOG.debug("child resource relative path = {}", resourcePath)
 
         def predicate = new Predicate<PageDecorator>() {
             @Override

@@ -3,4 +3,5 @@
     <filter root="/apps/bedrock/components" />
     <filter root="/apps/bedrock/install" />
     <filter root="/etc/clientlibs/bedrock" />
+    <filter root="/libs/cq/gui/components/authoring/dialog/fileuploadfield/clientlibs/fileuploadfield/js" />
 </workspaceFilter>

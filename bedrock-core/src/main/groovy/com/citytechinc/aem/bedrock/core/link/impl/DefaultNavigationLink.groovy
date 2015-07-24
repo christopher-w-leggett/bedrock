@@ -7,7 +7,8 @@ import groovy.transform.Immutable
 @Immutable(knownImmutableClasses = [Link])
 class DefaultNavigationLink implements NavigationLink {
 
-    @Delegate Link link
+    @Delegate
+    Link link
 
     boolean active
 

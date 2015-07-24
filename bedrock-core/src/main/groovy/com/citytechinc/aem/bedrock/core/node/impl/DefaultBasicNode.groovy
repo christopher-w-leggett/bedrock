@@ -57,17 +57,17 @@ final class DefaultBasicNode extends AbstractNode implements BasicNode {
     }
 
     @Override
-    public <T> T get(String propertyName, T defaultValue) {
+    <T> T get(String propertyName, T defaultValue) {
         properties.get(checkNotNull(propertyName), defaultValue)
     }
 
     @Override
-    public <T> Optional<T> get(String propertyName, Class<T> type) {
+    <T> Optional<T> get(String propertyName, Class<T> type) {
         Optional.fromNullable(properties.get(propertyName, type))
     }
 
     @Override
-    public <AdapterType> Optional<AdapterType> getAsType(String propertyName, Class<AdapterType> type) {
+    <AdapterType> Optional<AdapterType> getAsType(String propertyName, Class<AdapterType> type) {
         getAsTypeOptional(properties.get(checkNotNull(propertyName), ""), type)
     }
 
@@ -102,7 +102,7 @@ final class DefaultBasicNode extends AbstractNode implements BasicNode {
     }
 
     @Override
-    public <T> List<T> getAsList(String propertyName, Class<T> type) {
+    <T> List<T> getAsList(String propertyName, Class<T> type) {
         properties.get(checkNotNull(propertyName), Array.newInstance(type, 0)) as List
     }
 
@@ -164,7 +164,7 @@ final class DefaultBasicNode extends AbstractNode implements BasicNode {
         checkNotNull(renditionName)
 
         def imageReferenceOptional = getImageReference(name)
-        def imageRenditionOptional
+        def imageRenditionOptional = Optional.absent()
 
         if (imageReferenceOptional.present) {
             def asset = resource.resourceResolver.getResource(imageReferenceOptional.get()).adaptTo(Asset)
@@ -173,11 +173,7 @@ final class DefaultBasicNode extends AbstractNode implements BasicNode {
                 def rendition = asset.renditions.find { it.name == renditionName }
 
                 imageRenditionOptional = Optional.fromNullable(rendition?.path)
-            } else {
-                imageRenditionOptional = Optional.absent()
             }
-        } else {
-            imageRenditionOptional = Optional.absent()
         }
 
         imageRenditionOptional
@@ -279,7 +275,7 @@ final class DefaultBasicNode extends AbstractNode implements BasicNode {
     }
 
     @Override
-    List<Property> getProperties(Predicate<Property> predicate) {
+    List<Property> getProperties(Predicate<Property> predicate) throws RepositoryException {
         checkNotNull(predicate)
 
         def node = resource.adaptTo(Node)
@@ -289,7 +285,8 @@ final class DefaultBasicNode extends AbstractNode implements BasicNode {
             try {
                 properties.addAll(node.properties.findAll { Property property -> predicate.apply(property) })
             } catch (RepositoryException e) {
-                LOG.error "error getting properties for node = ${path}", e
+                LOG.error("error getting properties for node = $path", e)
+                throw e
             }
         }
 

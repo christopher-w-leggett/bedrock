@@ -37,7 +37,7 @@ import org.osgi.framework.Constants
 final class BedrockAdapterFactory implements AdapterFactory {
 
     @Override
-    public <AdapterType> AdapterType getAdapter(Object adaptable, Class<AdapterType> type) {
+    <AdapterType> AdapterType getAdapter(Object adaptable, Class<AdapterType> type) {
         def result
 
         if (adaptable instanceof ResourceResolver) {
@@ -51,7 +51,7 @@ final class BedrockAdapterFactory implements AdapterFactory {
         result
     }
 
-    private <AdapterType> AdapterType getResourceResolverAdapter(ResourceResolver resourceResolver,
+    private static <AdapterType> AdapterType getResourceResolverAdapter(ResourceResolver resourceResolver,
         Class<AdapterType> type) {
         def result
 
@@ -64,7 +64,7 @@ final class BedrockAdapterFactory implements AdapterFactory {
         result
     }
 
-    private <AdapterType> AdapterType getResourceAdapter(Resource resource, Class<AdapterType> type) {
+    private static <AdapterType> AdapterType getResourceAdapter(Resource resource, Class<AdapterType> type) {
         def result
 
         if (type == PageDecorator) {

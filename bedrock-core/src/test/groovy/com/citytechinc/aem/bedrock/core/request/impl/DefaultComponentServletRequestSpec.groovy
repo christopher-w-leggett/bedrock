@@ -1,20 +1,27 @@
 package com.citytechinc.aem.bedrock.core.request.impl
 
 import com.citytechinc.aem.bedrock.core.specs.BedrockSpec
-import org.apache.sling.api.SlingHttpServletResponse
 import spock.lang.Unroll
 
 @Unroll
 class DefaultComponentServletRequestSpec extends BedrockSpec {
+
+    def setupSpec() {
+        pageBuilder.content {
+            home {
+                "jcr:content" {
+                    component()
+                }
+            }
+        }
+    }
 
     def "get selectors"() {
         setup:
         def slingRequest = requestBuilder.build {
             selectors = selectorsList
         }
-
-        def slingResponse = Mock(SlingHttpServletResponse)
-
+        def slingResponse = responseBuilder.build()
         def request = new DefaultComponentServletRequest(slingRequest, slingResponse)
 
         expect:
@@ -29,9 +36,7 @@ class DefaultComponentServletRequestSpec extends BedrockSpec {
         def slingRequest = requestBuilder.build {
             parameters = ["a": ["1", "2"], "b": [""]]
         }
-
-        def slingResponse = Mock(SlingHttpServletResponse)
-
+        def slingResponse = responseBuilder.build()
         def request = new DefaultComponentServletRequest(slingRequest, slingResponse)
 
         expect:
@@ -49,9 +54,7 @@ class DefaultComponentServletRequestSpec extends BedrockSpec {
         def slingRequest = requestBuilder.build {
             parameters = ["a": ["1", "2"], "b": [""]]
         }
-
-        def slingResponse = Mock(SlingHttpServletResponse)
-
+        def slingResponse = responseBuilder.build()
         def request = new DefaultComponentServletRequest(slingRequest, slingResponse)
 
         expect:
@@ -68,9 +71,7 @@ class DefaultComponentServletRequestSpec extends BedrockSpec {
         def slingRequest = requestBuilder.build {
             parameters = ["a": ["1", "2"], "b": [""]]
         }
-
-        def slingResponse = Mock(SlingHttpServletResponse)
-
+        def slingResponse = responseBuilder.build()
         def request = new DefaultComponentServletRequest(slingRequest, slingResponse)
 
         expect:
@@ -88,9 +89,7 @@ class DefaultComponentServletRequestSpec extends BedrockSpec {
         def slingRequest = requestBuilder.build {
             parameters = ["a": ["1", "2"], "b": ["1"]]
         }
-
-        def slingResponse = Mock(SlingHttpServletResponse)
-
+        def slingResponse = responseBuilder.build()
         def request = new DefaultComponentServletRequest(slingRequest, slingResponse)
 
         expect:
@@ -108,9 +107,7 @@ class DefaultComponentServletRequestSpec extends BedrockSpec {
         def slingRequest = requestBuilder.build {
             parameters = ["a": ["1", "2"], "b": ["1"]]
         }
-
-        def slingResponse = Mock(SlingHttpServletResponse)
-
+        def slingResponse = responseBuilder.build()
         def request = new DefaultComponentServletRequest(slingRequest, slingResponse)
 
         expect:
@@ -120,5 +117,25 @@ class DefaultComponentServletRequestSpec extends BedrockSpec {
         parameterName | parameterValues
         "a"           | ["1", "2"]
         "b"           | ["1"]
+    }
+
+    def "getters return non-null values"() {
+        setup:
+        def slingRequest = requestBuilder.build {
+            path = "/content/home/jcr:content/component"
+        }
+        def slingResponse = responseBuilder.build()
+        def request = new DefaultComponentServletRequest(slingRequest, slingResponse)
+
+        expect:
+        request.componentNode
+        request.currentNode
+        request.currentPage
+        request.pageManager
+        request.properties
+        request.resource
+        request.resourceResolver
+        request.session
+        request.pageProperties
     }
 }
