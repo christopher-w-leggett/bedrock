@@ -12,7 +12,7 @@ import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Type
 
 @Component
-@Service
+@Service(Injector)
 @Property(name = Constants.SERVICE_RANKING, intValue = 2500)
 class ValueMapFromRequestInjector implements Injector {
 

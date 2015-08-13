@@ -19,8 +19,9 @@ import com.google.common.base.Optional
 import com.google.common.base.Predicate
 import com.google.common.collect.FluentIterable
 import com.google.common.collect.Maps
-import groovy.transform.EqualsAndHashCode
 import groovy.util.logging.Slf4j
+import org.apache.commons.lang3.builder.EqualsBuilder
+import org.apache.commons.lang3.builder.HashCodeBuilder
 import org.apache.sling.api.resource.Resource
 
 import java.lang.reflect.Array
@@ -32,7 +33,6 @@ import static com.citytechinc.aem.bedrock.core.node.impl.NodeFunctions.RESOURCE_
 import static com.google.common.base.Preconditions.checkNotNull
 
 @Slf4j("LOG")
-@EqualsAndHashCode(includes = "path")
 final class DefaultComponentNode extends AbstractNode implements ComponentNode {
 
     @Delegate
@@ -45,6 +45,16 @@ final class DefaultComponentNode extends AbstractNode implements ComponentNode {
 
         basicNode = new DefaultBasicNode(resource)
         properties = new HierarchyNodeInheritanceValueMap(resource)
+    }
+
+    @Override
+    boolean equals(Object other) {
+        new EqualsBuilder().append(path, (other as ComponentNode).path).equals
+    }
+
+    @Override
+    int hashCode() {
+        new HashCodeBuilder().append(path).hashCode()
     }
 
     @Override

@@ -19,9 +19,10 @@ import com.google.common.base.Predicate
 import com.google.common.base.Predicates
 import com.google.common.collect.Iterables
 import com.google.common.collect.Maps
-import groovy.transform.EqualsAndHashCode
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.StringUtils
+import org.apache.commons.lang3.builder.EqualsBuilder
+import org.apache.commons.lang3.builder.HashCodeBuilder
 import org.apache.sling.api.resource.Resource
 import org.apache.sling.api.resource.ValueMap
 
@@ -36,7 +37,6 @@ import static com.citytechinc.aem.bedrock.core.link.impl.LinkFunctions.LINK_TO_H
 import static com.google.common.base.Preconditions.checkNotNull
 
 @Slf4j("LOG")
-@EqualsAndHashCode(includes = "path")
 final class DefaultBasicNode extends AbstractNode implements BasicNode {
 
     private static final Predicate<Resource> ALL = Predicates.alwaysTrue()
@@ -49,6 +49,16 @@ final class DefaultBasicNode extends AbstractNode implements BasicNode {
         super(resource)
 
         properties = resource.valueMap
+    }
+
+    @Override
+    boolean equals(Object other) {
+        new EqualsBuilder().append(path, (other as BasicNode).path).equals
+    }
+
+    @Override
+    int hashCode() {
+        new HashCodeBuilder().append(path).hashCode()
     }
 
     @Override

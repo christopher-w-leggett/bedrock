@@ -13,7 +13,7 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 @Component
-@Service
+@Service(Injector)
 @Property(name = Constants.SERVICE_RANKING, intValue = 999)
 class ModelListInjector implements Injector {
 

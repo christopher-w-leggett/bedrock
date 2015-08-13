@@ -431,6 +431,16 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
+				<groupId>org.apache.sling</groupId>
+				<artifactId>org.apache.sling.models.api</artifactId>
+				<version>1.2.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.sling</groupId>
+				<artifactId>org.apache.sling.models.impl</artifactId>
+				<version>1.2.0</version>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>org.apache.felix.scr.annotations</artifactId>
 				<version>1.9.12</version>
@@ -459,6 +469,16 @@
 				<groupId>com.citytechinc.aem.groovy.extension</groupId>
 				<artifactId>aem-groovy-extension-bundle</artifactId>
 				<version>1.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.spockframework</groupId>
+				<artifactId>spock-core</artifactId>
+				<version>1.0-groovy-2.4</version>
+			</dependency>
+			<dependency>
+				<groupId>com.citytechinc.aem.prosper</groupId>
+				<artifactId>prosper</artifactId>
+				<version>5.0.0</version>
 			</dependency>
 			<dependency>
 				<groupId>net.sourceforge.cobertura</groupId>

@@ -11,18 +11,18 @@ import org.apache.sling.api.resource.Resource
 import org.apache.sling.models.spi.AcceptsNullName
 import org.apache.sling.models.spi.DisposalCallbackRegistry
 import org.apache.sling.models.spi.Injector
-import org.apache.sling.models.spi.injectorspecific.AbstractInjectAnnotationProcessor
-import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessor
-import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessorFactory
+import org.apache.sling.models.spi.injectorspecific.AbstractInjectAnnotationProcessor2
+import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessor2
+import org.apache.sling.models.spi.injectorspecific.StaticInjectAnnotationProcessorFactory
 import org.osgi.framework.Constants
 
 import java.lang.reflect.AnnotatedElement
 
 @Component
-@Service
+@Service(Injector)
 @Property(name = Constants.SERVICE_RANKING, intValue = 4000)
 class ImageInjector extends AbstractTypedComponentNodeInjector<Image> implements Injector,
-    InjectAnnotationProcessorFactory, AcceptsNullName {
+    StaticInjectAnnotationProcessorFactory, AcceptsNullName {
 
     @Override
     String getName() {
@@ -69,14 +69,14 @@ class ImageInjector extends AbstractTypedComponentNodeInjector<Image> implements
     }
 
     @Override
-    InjectAnnotationProcessor createAnnotationProcessor(Object adaptable, AnnotatedElement element) {
+    InjectAnnotationProcessor2 createAnnotationProcessor(AnnotatedElement element) {
         // check if the element has the expected annotation
         def annotation = element.getAnnotation(ImageInject)
 
         annotation ? new ImageAnnotationProcessor(annotation) : null
     }
 
-    private static class ImageAnnotationProcessor extends AbstractInjectAnnotationProcessor {
+    private static class ImageAnnotationProcessor extends AbstractInjectAnnotationProcessor2 {
 
         private final ImageInject annotation
 

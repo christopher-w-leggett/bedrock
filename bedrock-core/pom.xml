@@ -367,7 +367,6 @@
 		<dependency>
 			<groupId>com.citytechinc.aem.prosper</groupId>
 			<artifactId>prosper</artifactId>
-            <version>4.0.0</version>
 		</dependency>
         <dependency>
             <groupId>cglib</groupId>

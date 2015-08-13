@@ -15,19 +15,18 @@ import com.citytechinc.aem.bedrock.core.node.predicates.ComponentNodePropertyVal
 import com.day.cq.commons.Filter
 import com.day.cq.wcm.api.NameConstants
 import com.day.cq.wcm.api.Page
+import com.google.common.base.Objects
 import com.google.common.base.Optional
 import com.google.common.base.Predicate
 import com.google.common.base.Predicates
-import groovy.transform.EqualsAndHashCode
-import groovy.transform.ToString
+import org.apache.commons.lang3.builder.EqualsBuilder
+import org.apache.commons.lang3.builder.HashCodeBuilder
 import org.apache.sling.api.resource.Resource
 import org.apache.sling.api.resource.ValueMap
 
 import static com.citytechinc.aem.bedrock.core.node.impl.NodeFunctions.RESOURCE_TO_COMPONENT_NODE
 import static com.google.common.base.Preconditions.checkNotNull
 
-@ToString(includes = ["path", "title"])
-@EqualsAndHashCode(includes = "path")
 final class DefaultPageDecorator implements PageDecorator {
 
     private static final Predicate<PageDecorator> ALL = Predicates.alwaysTrue()
@@ -55,6 +54,24 @@ final class DefaultPageDecorator implements PageDecorator {
         this.delegate = page
 
         componentNodeOptional = Optional.fromNullable(page.contentResource).transform(RESOURCE_TO_COMPONENT_NODE)
+    }
+
+    @Override
+    boolean equals(Object other) {
+        new EqualsBuilder().append(path, (other as PageDecorator).path).equals
+    }
+
+    @Override
+    int hashCode() {
+        new HashCodeBuilder().append(path).hashCode()
+    }
+
+    @Override
+    String toString() {
+        Objects.toStringHelper(this)
+            .add("path", path)
+            .add("title", title)
+            .toString()
     }
 
     @Override

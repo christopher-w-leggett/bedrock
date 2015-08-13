@@ -11,9 +11,9 @@ import org.apache.felix.scr.annotations.Service
 import org.apache.sling.models.spi.AcceptsNullName
 import org.apache.sling.models.spi.DisposalCallbackRegistry
 import org.apache.sling.models.spi.Injector
-import org.apache.sling.models.spi.injectorspecific.AbstractInjectAnnotationProcessor
-import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessor
-import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessorFactory
+import org.apache.sling.models.spi.injectorspecific.AbstractInjectAnnotationProcessor2
+import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessor2
+import org.apache.sling.models.spi.injectorspecific.StaticInjectAnnotationProcessorFactory
 import org.osgi.framework.Constants
 
 import java.lang.reflect.AnnotatedElement
@@ -22,66 +22,68 @@ import java.lang.reflect.AnnotatedElement
 @Service
 @Property(name = Constants.SERVICE_RANKING, intValue = 4000)
 class LinkInjector extends AbstractTypedComponentNodeInjector<Link> implements Injector,
-    InjectAnnotationProcessorFactory, AcceptsNullName {
+    StaticInjectAnnotationProcessorFactory, AcceptsNullName {
 
-	@Override
+    @Override
     String getName() {
-		LinkInject.NAME
-	}
+        LinkInject.NAME
+    }
 
-	@Override
+    @Override
     Object getValue(ComponentNode componentNode, String name, Class<Link> declaredType, AnnotatedElement element,
         DisposalCallbackRegistry callbackRegistry) {
-		def injectAnnotation = element.getAnnotation(LinkInject)
+        def injectAnnotation = element.getAnnotation(LinkInject)
 
-		Optional<String> pathOptional
+        Optional<String> pathOptional
 
-		String title = null
+        String title = null
 
-		if (injectAnnotation) {
-			if (injectAnnotation.inherit()) {
-				pathOptional = componentNode.getInherited(name, String)
-				if (injectAnnotation.titleProperty()) {
-					title = componentNode.getInherited(injectAnnotation.titleProperty(), String).orNull()
-				}
-			} else {
-				pathOptional = componentNode.get(name, String)
-				if (injectAnnotation.titleProperty()) {
-					title = componentNode.get(injectAnnotation.titleProperty(), String).orNull()
-				}
-			}
-		} else {
-			pathOptional = componentNode.get(name, String)
-		}
+        if (injectAnnotation) {
+            if (injectAnnotation.inherit()) {
+                pathOptional = componentNode.getInherited(name, String)
 
-		if (pathOptional.present) {
-			def linkBuilder = LinkBuilderFactory.forPath(pathOptional.get()).setTitle(title)
+                if (injectAnnotation.titleProperty()) {
+                    title = componentNode.getInherited(injectAnnotation.titleProperty(), String).orNull()
+                }
+            } else {
+                pathOptional = componentNode.get(name, String)
 
-			return linkBuilder.build()
-		}
+                if (injectAnnotation.titleProperty()) {
+                    title = componentNode.get(injectAnnotation.titleProperty(), String).orNull()
+                }
+            }
+        } else {
+            pathOptional = componentNode.get(name, String)
+        }
 
-		null
-	}
+        if (pathOptional.present) {
+            def linkBuilder = LinkBuilderFactory.forPath(pathOptional.get()).setTitle(title)
 
-	@Override
-    InjectAnnotationProcessor createAnnotationProcessor(Object adaptable, AnnotatedElement element) {
-		// check if the element has the expected annotation
-		def annotation = element.getAnnotation(LinkInject)
+            return linkBuilder.build()
+        }
 
-		annotation ? new LinkAnnotationProcessor(annotation) : null
-	}
+        null
+    }
 
-	private static class LinkAnnotationProcessor extends AbstractInjectAnnotationProcessor {
+    @Override
+    InjectAnnotationProcessor2 createAnnotationProcessor(AnnotatedElement element) {
+        // check if the element has the expected annotation
+        def annotation = element.getAnnotation(LinkInject)
 
-		private final LinkInject annotation
+        annotation ? new LinkAnnotationProcessor(annotation) : null
+    }
 
-		LinkAnnotationProcessor(LinkInject annotation) {
-			this.annotation = annotation
-		}
+    private static class LinkAnnotationProcessor extends AbstractInjectAnnotationProcessor2 {
 
-		@Override
-		Boolean isOptional() {
-			annotation.optional()
-		}
-	}
+        private final LinkInject annotation
+
+        LinkAnnotationProcessor(LinkInject annotation) {
+            this.annotation = annotation
+        }
+
+        @Override
+        Boolean isOptional() {
+            annotation.optional()
+        }
+    }
 }
