@@ -35,4 +35,12 @@ public @interface ImageInject {
 	 * Whether to get the link via inheriting
 	 */
 	boolean inherit() default false;
+
+	/**
+	 * Selector to set on the injected Image object.  This affects the calculated
+	 * source of the image.  Defaults to img as this selector will trigger the OOB
+	 * ImageServlet and is usually the selector you want.
+	 */
+	String[] selectors() default { "img" };
+
 }

@@ -61,6 +61,9 @@ class ImageInjector extends AbstractTypedComponentNodeInjector<Image> implements
             }
 
             if (image.hasContent()) {
+                if (imageAnnotation.selectors()) {
+                    image.setSelector("." + imageAnnotation.selectors().join("."))
+                }
                 return image
             }
         }
