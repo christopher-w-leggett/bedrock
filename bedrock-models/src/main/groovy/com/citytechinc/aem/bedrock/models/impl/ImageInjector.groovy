@@ -33,7 +33,7 @@ class ImageInjector extends AbstractTypedComponentNodeInjector<Image> implements
     Object getValue(ComponentNode componentNode, String name, Class<Image> declaredType,
         AnnotatedElement element, DisposalCallbackRegistry callbackRegistry) {
         def imageAnnotation = element.getAnnotation(ImageInject)
-        def path = imageAnnotation?.path()
+        def path = ImageInject.SELF.equals(imageAnnotation?.path()) ? "" : imageAnnotation?.path() ?: name
 
         Image image
         Resource resource
