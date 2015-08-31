@@ -3,6 +3,9 @@ package com.citytechinc.aem.bedrock.models.utils
 import org.apache.sling.api.SlingHttpServletRequest
 import org.apache.sling.api.resource.Resource
 
+import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
+
 /**
  * Model utility functions.
  */
@@ -28,6 +31,26 @@ class ModelUtils {
         }
 
         resource
+    }
+
+    static boolean isDeclaredTypeCollection(Type declaredType) {
+        if (declaredType instanceof ParameterizedType) {
+            def parameterizedType = (ParameterizedType) declaredType
+            def collectionType = (Class) parameterizedType.rawType
+
+            return Collection.isAssignableFrom(collectionType)
+        }
+
+        return false
+    }
+
+    static Class getDeclaredClassForDeclaredType(Type declaredType) {
+        if (isDeclaredTypeCollection(declaredType)) {
+            def parameterizedType = (ParameterizedType) declaredType
+            return (Class) parameterizedType.getActualTypeArguments()[0]
+        }
+
+        return (Class) declaredType
     }
 
     private ModelUtils() {
