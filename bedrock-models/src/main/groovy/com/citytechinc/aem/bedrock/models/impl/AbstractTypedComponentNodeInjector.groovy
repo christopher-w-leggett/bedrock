@@ -4,6 +4,8 @@ import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
+import javax.inject.Named
+
 import org.apache.sling.models.spi.DisposalCallbackRegistry
 import org.apache.sling.models.spi.Injector
 
@@ -26,7 +28,7 @@ abstract class AbstractTypedComponentNodeInjector<T> implements Injector {
 			def componentNode = ModelUtils.getResource(adaptable)?.adaptTo(ComponentNode)
 
 			if (componentNode) {
-				value = getValue(componentNode, name, declaredType, element, callbackRegistry)
+				value = getValue(componentNode, element.getAnnotation(Named)?.value() ?: name, declaredType, element, callbackRegistry)
 			}
 		}
 

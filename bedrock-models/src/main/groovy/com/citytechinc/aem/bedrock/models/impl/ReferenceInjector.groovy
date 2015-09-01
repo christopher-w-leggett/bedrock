@@ -25,74 +25,70 @@ import java.lang.reflect.Type
 @Slf4j("LOG")
 class ReferenceInjector extends AbstractComponentNodeInjector implements InjectAnnotationProcessorFactory2 {
 
-    @Override
-    Object getValue(ComponentNode componentNode, String name, Type declaredType, AnnotatedElement element, DisposalCallbackRegistry callbackRegistry) {
-        def annotation = element.getAnnotation(ReferenceInject)
-        def propertyName = element.getAnnotation(Named)?.value() ?: name
-        def declaredClass = ModelUtils.getDeclaredClassForDeclaredType(declaredType)
+	@Override
+	Object getValue(ComponentNode componentNode, String name, Type declaredType, AnnotatedElement element, DisposalCallbackRegistry callbackRegistry) {
+		def annotation = element.getAnnotation(ReferenceInject)
+		def declaredClass = ModelUtils.getDeclaredClassForDeclaredType(declaredType)
 
-        if (annotation) {
-            def references = annotation.inherit() ? componentNode.getAsListInherited(propertyName, String) : componentNode.getAsList(propertyName, String)
-            def referencedObjects = references.collect {
-                def referencedResource = it.startsWith("/") ?
-                        componentNode.resource.resourceResolver.getResource(it) :
-                        componentNode.resource.resourceResolver.getResource(componentNode.resource, it)
+		if (annotation) {
+			def references = annotation.inherit() ? componentNode.getAsListInherited(name, String) : componentNode.getAsList(name, String)
+			def referencedObjects = references.collect {
+				def referencedResource = it.startsWith("/") ?
+						componentNode.resource.resourceResolver.getResource(it) :
+						componentNode.resource.resourceResolver.getResource(componentNode.resource, it)
 
-                if (!referencedResource) {
-                        LOG.warn("Reference " + it + " did not resolve to an accessible Resource")
-                }
-                if (referencedResource && declaredClass != Resource) {
-                    def adaptedObject = referencedResource.adaptTo(declaredClass)
+				if (!referencedResource) {
+					LOG.warn("Reference " + it + " did not resolve to an accessible Resource")
+				}
+				if (referencedResource && declaredClass != Resource) {
+					def adaptedObject = referencedResource.adaptTo(declaredClass)
 
-                    if (!adaptedObject) {
-                        LOG.warn("Resource at " + referencedResource.path + " could not be adapted to an instance of " + declaredClass.name)
-                    }
+					if (!adaptedObject) {
+						LOG.warn("Resource at " + referencedResource.path + " could not be adapted to an instance of " + declaredClass.name)
+					}
 
-                    return adaptedObject
-                }
+					return adaptedObject
+				}
 
-                return referencedResource
-            }
+				return referencedResource
+			}
 
-            if (referencedObjects) {
+			if (referencedObjects) {
 
-                if (!ModelUtils.isDeclaredTypeCollection(declaredType)) {
-                    return referencedObjects[0]
-                }
+				if (!ModelUtils.isDeclaredTypeCollection(declaredType)) {
+					return referencedObjects[0]
+				}
 
-                return referencedObjects
+				return referencedObjects
+			}
+		}
 
-            }
-        }
+		return null
+	}
 
-        return null
-    }
+	@Override
+	InjectAnnotationProcessor2 createAnnotationProcessor(Object adaptable, AnnotatedElement element) {
+		def annotation = element.getAnnotation(ReferenceInject)
 
-    @Override
-    InjectAnnotationProcessor2 createAnnotationProcessor(Object adaptable, AnnotatedElement element) {
-        def annotation = element.getAnnotation(ReferenceInject)
+		annotation ? new ReferenceAnnotationProcessor(annotation) : null
+	}
 
-        annotation ? new ReferenceAnnotationProcessor(annotation) : null
-    }
+	@Override
+	String getName() {
+		ReferenceInject.NAME
+	}
 
-    @Override
-    String getName() {
-        ReferenceInject.NAME
-    }
+	private static class ReferenceAnnotationProcessor extends AbstractInjectAnnotationProcessor2 {
 
-    private static class ReferenceAnnotationProcessor extends AbstractInjectAnnotationProcessor2 {
+		private final ReferenceInject annotation
 
-        private final ReferenceInject annotation
+		ReferenceAnnotationProcessor(ReferenceInject annotation) {
+			this.annotation = annotation
+		}
 
-        ReferenceAnnotationProcessor(ReferenceInject annotation) {
-            this.annotation = annotation
-        }
-
-        @Override
-        public InjectionStrategy getInjectionStrategy() {
-            return annotation.injectionStrategy()
-        }
-
-    }
-
+		@Override
+		public InjectionStrategy getInjectionStrategy() {
+			return annotation.injectionStrategy()
+		}
+	}
 }
