@@ -17,35 +17,38 @@ import java.lang.reflect.Type
 @Property(name = Constants.SERVICE_RANKING, intValue = 999)
 class ModelListInjector implements Injector {
 
-    @Override
-    String getName() {
-        "model-list"
-    }
+	@Override
+	String getName() {
+		"model-list"
+	}
 
-    @Override
-    Object getValue(Object adaptable, String name, Type declaredType, AnnotatedElement element,
-        DisposalCallbackRegistry callbackRegistry) {
-        def value = null
+	@Override
+	Object getValue(Object adaptable, String name, Type declaredType, AnnotatedElement element,
+			DisposalCallbackRegistry callbackRegistry) {
+		def value = null
 
-        def resource = ModelUtils.getResource(adaptable)
+		def resource = ModelUtils.getResource(adaptable)
 
-        if (resource && declaredType instanceof ParameterizedType && (((ParameterizedType) declaredType).rawType) as
-            Class == List) {
-            def typeClass = getActualType((ParameterizedType) declaredType)
+		if (resource && declaredType instanceof ParameterizedType && (((ParameterizedType) declaredType).rawType) as
+		Class == List) {
+			def typeClass = getActualType((ParameterizedType) declaredType)
 
-            def childResource = resource.getChild(name)
+			def childResource = resource.getChild(name)
 
-            if (childResource) {
-                value = childResource.children.collect { grandChildResource -> grandChildResource.adaptTo(typeClass) } - null
-            }
-        }
+			if (childResource) {
+				value = childResource.children.collect { grandChildResource -> grandChildResource.adaptTo(typeClass) } - null
+				if(value.size == 0){
+					value = null
+				}
+			}
+		}
 
-        value
-    }
+		value
+	}
 
-    private static Class<?> getActualType(ParameterizedType declaredType) {
-        def types = declaredType.actualTypeArguments
+	private static Class<?> getActualType(ParameterizedType declaredType) {
+		def types = declaredType.actualTypeArguments
 
-        types ? (Class<?>) types[0] : null
-    }
+		types ? (Class<?>) types[0] : null
+	}
 }

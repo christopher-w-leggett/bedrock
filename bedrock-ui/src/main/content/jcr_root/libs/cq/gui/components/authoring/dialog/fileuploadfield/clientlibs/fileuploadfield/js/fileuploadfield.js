@@ -75,28 +75,14 @@
         $thumbnail.empty();
 
         $.ajax({
-            url: self.resourceURL + ".infinity.json",
+            url: self.resourceURL + ".json",
             cache: false
         }).done(function (data) {
 
-            var fn = self.fieldNames.fileName.substr(self.fieldNames.fileName.indexOf("/")+1);
-            var fr = self.fieldNames.fileReference.substr(self.fieldNames.fileReference.indexOf("/")+1);
-            
-            var fileNameSplit = fn.split("/");
-            var fileName = data[fileNameSplit[0]];
-            for(var i=1;i<fileNameSplit.length;i++){
-            	if(fileName){
-            		fileName=fileName[fileNameSplit[i]];
-            	}
-            };
-            
-            var fileReferenceSplit = fr.split("/");
-            var fileRef = data[fileReferenceSplit[0]];
-            for(var i=1;i<fileReferenceSplit.length;i++){
-            	if(fileRef){
-            		fileRef=fileRef[fileReferenceSplit[i]];
-            	}
-            };
+            var fn = self.fieldNames.fileName.substr(self.fieldNames.fileName.lastIndexOf("/")+1);
+            var fr = self.fieldNames.fileReference.substr(self.fieldNames.fileReference.lastIndexOf("/")+1);
+            var fileName = data[fn],
+                fileRef = data[fr];
 
             if (fileRef) {
                 if (self._isImageMimeType(fileRef)) {
