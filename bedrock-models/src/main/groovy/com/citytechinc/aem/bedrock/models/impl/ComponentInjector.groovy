@@ -5,6 +5,8 @@ import com.citytechinc.aem.bedrock.api.node.ComponentNode
 import com.citytechinc.aem.bedrock.api.page.PageDecorator
 import com.citytechinc.aem.bedrock.api.page.PageManagerDecorator
 import com.citytechinc.aem.bedrock.models.utils.ModelUtils
+import com.day.cq.wcm.api.Page
+import com.day.cq.wcm.api.PageManager
 import com.day.cq.wcm.api.WCMMode
 import com.day.cq.wcm.api.components.ComponentContext
 import com.day.cq.wcm.api.components.EditContext
@@ -128,9 +130,9 @@ class ComponentInjector implements Injector {
                 value = resource.adaptTo(BasicNode)
             } else if (clazz == ComponentNode) {
                 value = resource.adaptTo(ComponentNode)
-            } else if (clazz == PageDecorator) {
+            } else if (clazz == PageDecorator || clazz == Page) {
                 value = resource.resourceResolver.adaptTo(PageManagerDecorator).getContainingPage(resource)
-            } else if (clazz == PageManagerDecorator) {
+            } else if (clazz == PageManagerDecorator || clazz == PageManager) {
                 value = resource.resourceResolver.adaptTo(PageManagerDecorator)
             } else {
                 LOG.debug("class = {} is not supported by this injector", clazz.name)
