@@ -24,8 +24,7 @@ import java.lang.reflect.AnnotatedElement
 @Component
 @Service(Injector)
 @Property(name = Constants.SERVICE_RANKING, intValue = 4000)
-class ImageInjector extends AbstractTypedComponentNodeInjector<Image> implements Injector,
-InjectAnnotationProcessorFactory2, AcceptsNullName {
+class ImageInjector extends AbstractTypedComponentNodeInjector<Image> implements Injector,InjectAnnotationProcessorFactory2, AcceptsNullName {
 
 	@Override
 	String getName() {
@@ -36,7 +35,7 @@ InjectAnnotationProcessorFactory2, AcceptsNullName {
 	Object getValue(ComponentNode componentNode, String name, Class<Image> declaredType,
 			AnnotatedElement element, DisposalCallbackRegistry callbackRegistry) {
 		def imageAnnotation = element.getAnnotation(ImageInject)
-		def path = imageAnnotation?.path()
+		boolean self = imageAnnotation ? imageAnnotation.isSelf() : false
 
 		Image image
 		Resource resource
@@ -45,7 +44,7 @@ InjectAnnotationProcessorFactory2, AcceptsNullName {
 			def componentNodeInherit = componentNode.findAncestor(new Predicate<ComponentNode>() {
 						@Override
 						boolean apply(ComponentNode cn) {
-							path ? cn.isHasImage(path) : cn.hasImage
+							self ? cn.hasImage : cn.isHasImage(name)
 						}
 					})
 
@@ -57,13 +56,20 @@ InjectAnnotationProcessorFactory2, AcceptsNullName {
 		}
 
 		if (resource) {
-			if (path) {
-				image = new Image(resource, path)
-			} else {
+			if (self) {
 				image = new Image(resource)
+			} else {
+				image = new Image(resource, name)
 			}
 
 			if (image.hasContent()) {
+				if(imageAnnotation){
+					if (imageAnnotation.selectors()) {
+						image.setSelector("." + imageAnnotation.selectors().join("."))
+					}
+				}else{
+					image.setSelector(ImageInject.IMG_SELECTOR)
+				}
 				return image
 			}
 		}
