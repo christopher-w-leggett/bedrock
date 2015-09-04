@@ -1,147 +1,145 @@
 package com.citytechinc.aem.bedrock.core.services.cache
 
-import static com.google.common.base.Preconditions.checkNotNull
-
-import java.lang.reflect.Field
-
-import org.slf4j.Logger
-
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheStats
 import com.google.common.collect.ImmutableList
-import com.google.common.collect.Lists
+import org.slf4j.Logger
 
-trait CacheServiceTrait implements CacheService{
+import java.lang.reflect.Field
 
-	@Override
-	boolean clearAllCaches() {
-		boolean cleared = false
-		for (final Field field : collectFields(this.getClass())) {
-			if (isCache(field)) {
-				try {
-					getCache(field).invalidateAll()
-					cleared = true
-				} catch (final Exception e) {
-					getLogger().error(
-							"An error has occurred while attempting to invalidate cache values for " + field.getName()
-							+ " in the class " + this.getClass().getName() + ".", e)
-				}
-			}
-		}
-		return cleared
-	}
+import static com.google.common.base.Preconditions.checkNotNull
 
-	@Override
-	boolean clearSpecificCache(final String cacheVariableName) {
-		checkNotNull(cacheVariableName, "cache name must not be null")
+trait CacheServiceTrait implements CacheService {
 
-		boolean cleared = false
+    @Override
+    boolean clearAllCaches() {
+        boolean cleared = false
 
-		for (final Field field : collectFields(this.getClass())) {
-			if (isNamedCache(field, cacheVariableName)) {
-				try {
-					getCache(field).invalidateAll()
-					cleared = true
-				} catch (final Exception e) {
-					getLogger().error(
-							"An error has occurred while attempting to invalidate cache values for " + field.getName()
-							+ " in the class " + this.getClass().getName() + ".", e)
-				}
-			}
-		}
+        collectFields(this.class).each { field ->
+            if (isCache(field)) {
+                try {
+                    getCache(field).invalidateAll()
+                    cleared = true
+                } catch (Exception e) {
+                    logger.error("An error has occurred while attempting to invalidate cache values for " +
+                        "${field.name} in the class ${this.class.name}.", e)
+                }
+            }
+        }
 
-		return cleared
-	}
+        cleared
+    }
 
-	@Override
-	Long getCacheSize(final String cacheVariableName) {
-		checkNotNull(cacheVariableName, "cache name must not be null")
+    @Override
+    boolean clearSpecificCache(String cacheVariableName) {
+        checkNotNull(cacheVariableName, "cache name must not be null")
 
-		Long cacheSize = 0L
+        boolean cleared = false
 
-		for (final Field field : collectFields()) {
-			if (isNamedCache(field, cacheVariableName)) {
-				try {
-					cacheSize = getCache(field).size()
-				} catch (final Exception e) {
-					getLogger().error("An error has occurred while attempting retrieve cache size for " + field
-							.getName() + " in the class " + this.getClass().getName() + ".", e)
-				}
-			}
-		}
+        collectFields(this.class).each { field ->
+            if (isNamedCache(field, cacheVariableName)) {
+                try {
+                    getCache(field).invalidateAll()
+                    cleared = true
+                } catch (Exception e) {
+                    logger.error("An error has occurred while attempting to invalidate cache values for " +
+                        "${field.name} in the class ${this.class.name}.", e)
+                }
+            }
+        }
 
-		return cacheSize
-	}
+        cleared
+    }
 
-	@Override
-	CacheStats getCacheStats(final String cacheVariableName) {
-		checkNotNull(cacheVariableName, "cache name must not be null")
+    @Override
+    Long getCacheSize(String cacheVariableName) {
+        checkNotNull(cacheVariableName, "cache name must not be null")
 
-		CacheStats cacheStats = null
+        def cacheSize = 0L
 
-		for (final Field field : collectFields()) {
-			if (isNamedCache(field, cacheVariableName)) {
-				try {
-					cacheStats = getCache(field).stats()
-				} catch (final Exception e) {
-					getLogger().error("An error has occurred while attempting retrieve cache statistics for " + field
-							.getName() + " in the class " + this.getClass().getName() + ".", e)
-				}
-			}
-		}
+        collectFields().each { field ->
+            if (isNamedCache(field, cacheVariableName)) {
+                try {
+                    cacheSize = getCache(field).size()
+                } catch (Exception e) {
+                    logger.error("An error has occurred while attempting retrieve cache size for ${field.name} in " +
+                        "the class ${this.class.name}.", e)
+                }
+            }
+        }
 
-		return cacheStats
-	}
+        cacheSize
+    }
 
-	@Override
-	List<String> listCaches() {
-		final ImmutableList.Builder<String> cachesBuilder = new ImmutableList.Builder<String>()
+    @Override
+    CacheStats getCacheStats(String cacheVariableName) {
+        checkNotNull(cacheVariableName, "cache name must not be null")
 
-		for (final Field field : collectFields()) {
-			if (isCache(field)) {
-				cachesBuilder.add(field.getName())
-			}
-		}
+        def cacheStats = null
 
-		return cachesBuilder.build()
-	}
+        collectFields().each { field ->
+            if (isNamedCache(field, cacheVariableName)) {
+                try {
+                    cacheStats = getCache(field).stats()
+                } catch (Exception e) {
+                    logger.error("An error has occurred while attempting retrieve cache statistics for ${field.name} " +
+                        "in the class ${this.class.name}.", e)
+                }
+            }
+        }
 
-	abstract Logger getLogger()
+        cacheStats
+    }
 
-	private List<Field> collectFields() {
-		return collectFields(this.getClass())
-	}
+    @Override
+    List<String> listCaches() {
+        def cachesBuilder = new ImmutableList.Builder<String>()
 
-	private static List<Field> collectFields(final Class clazz) {
-		final List<Field> fields = Lists.newArrayList()
+        collectFields().each { field ->
+            if (isCache(field)) {
+                cachesBuilder.add(field.name)
+            }
+        }
 
-		if (clazz != null) {
-			fields.addAll(Arrays.asList(clazz.getDeclaredFields()))
-			fields.addAll(collectFields(clazz.getSuperclass()))
-		}
+        cachesBuilder.build()
+    }
 
-		return fields
-	}
+    abstract Logger getLogger()
 
-	private static boolean isNamedCache(final Field field, final String cacheVariableName) {
-		return isCache(field) && cacheVariableName.equals(field.getName())
-	}
+    private List<Field> collectFields() {
+        collectFields(this.class)
+    }
 
-	private static boolean isCache(final Field field) {
-		return isCacheType(field) || isAssignableFromCache(field)
-	}
+    private static List<Field> collectFields(Class clazz) {
+        def fields = []
 
-	private static boolean isCacheType(final Field field) {
-		return field.getType() == Cache.class
-	}
+        if (clazz) {
+            fields.addAll(clazz.declaredFields as List)
+            fields.addAll(collectFields(clazz.superclass))
+        }
 
-	private static boolean isAssignableFromCache(final Field field) {
-		return Cache.class.isAssignableFrom(field.getType())
-	}
+        fields
+    }
 
-	private Cache getCache(final Field field) throws IllegalAccessException {
-		field.setAccessible(true)
+    private static boolean isNamedCache(Field field, String cacheVariableName) {
+        isCache(field) && cacheVariableName == field.name
+    }
 
-		return (Cache) field.get(this)
-	}
+    private static boolean isCache(Field field) {
+        isCacheType(field) || isAssignableFromCache(field)
+    }
+
+    private static boolean isCacheType(Field field) {
+        field.type == Cache
+    }
+
+    private static boolean isAssignableFromCache(Field field) {
+        Cache.isAssignableFrom(field.type)
+    }
+
+    private Cache getCache(Field field) {
+        field.setAccessible(true)
+
+        (Cache) field.get(this)
+    }
 }
