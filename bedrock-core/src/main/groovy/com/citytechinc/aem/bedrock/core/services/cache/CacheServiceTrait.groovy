@@ -2,7 +2,6 @@ package com.citytechinc.aem.bedrock.core.services.cache
 
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheStats
-import com.google.common.collect.ImmutableList
 import org.slf4j.Logger
 
 import java.lang.reflect.Field
@@ -15,15 +14,13 @@ trait CacheServiceTrait implements CacheService {
     boolean clearAllCaches() {
         boolean cleared = false
 
-        collectFields(this.class).each { field ->
-            if (isCache(field)) {
-                try {
-                    getCache(field).invalidateAll()
-                    cleared = true
-                } catch (Exception e) {
-                    logger.error("An error has occurred while attempting to invalidate cache values for " +
-                        "${field.name} in the class ${this.class.name}.", e)
-                }
+        collectFields().each { field ->
+            try {
+                getCache(field).invalidateAll()
+                cleared = true
+            } catch (Exception e) {
+                logger.error("An error has occurred while attempting to invalidate cache values for " +
+                    "${field.name} in the class ${this.class.name}.", e)
             }
         }
 
@@ -36,15 +33,13 @@ trait CacheServiceTrait implements CacheService {
 
         boolean cleared = false
 
-        collectFields(this.class).each { field ->
-            if (isNamedCache(field, cacheVariableName)) {
-                try {
-                    getCache(field).invalidateAll()
-                    cleared = true
-                } catch (Exception e) {
-                    logger.error("An error has occurred while attempting to invalidate cache values for " +
-                        "${field.name} in the class ${this.class.name}.", e)
-                }
+        collectFields(cacheVariableName).each { field ->
+            try {
+                getCache(field).invalidateAll()
+                cleared = true
+            } catch (Exception e) {
+                logger.error("An error has occurred while attempting to invalidate cache values for " +
+                    "${field.name} in the class ${this.class.name}.", e)
             }
         }
 
@@ -57,14 +52,12 @@ trait CacheServiceTrait implements CacheService {
 
         def cacheSize = 0L
 
-        collectFields().each { field ->
-            if (isNamedCache(field, cacheVariableName)) {
-                try {
-                    cacheSize = getCache(field).size()
-                } catch (Exception e) {
-                    logger.error("An error has occurred while attempting retrieve cache size for ${field.name} in " +
-                        "the class ${this.class.name}.", e)
-                }
+        collectFields(cacheVariableName).each { field ->
+            try {
+                cacheSize = getCache(field).size()
+            } catch (Exception e) {
+                logger.error("An error has occurred while attempting retrieve cache size for ${field.name} in " +
+                    "the class ${this.class.name}.", e)
             }
         }
 
@@ -77,14 +70,12 @@ trait CacheServiceTrait implements CacheService {
 
         def cacheStats = null
 
-        collectFields().each { field ->
-            if (isNamedCache(field, cacheVariableName)) {
-                try {
-                    cacheStats = getCache(field).stats()
-                } catch (Exception e) {
-                    logger.error("An error has occurred while attempting retrieve cache statistics for ${field.name} " +
-                        "in the class ${this.class.name}.", e)
-                }
+        collectFields(cacheVariableName).each { field ->
+            try {
+                cacheStats = getCache(field).stats()
+            } catch (Exception e) {
+                logger.error("An error has occurred while attempting retrieve cache statistics for ${field.name} " +
+                    "in the class ${this.class.name}.", e)
             }
         }
 
@@ -93,53 +84,64 @@ trait CacheServiceTrait implements CacheService {
 
     @Override
     List<String> listCaches() {
-        def cachesBuilder = new ImmutableList.Builder<String>()
-
-        collectFields().each { field ->
-            if (isCache(field)) {
-                cachesBuilder.add(field.name)
-            }
-        }
-
-        cachesBuilder.build()
+        collectFields()*.name
     }
 
     abstract Logger getLogger()
 
-    private List<Field> collectFields() {
+    List<Field> collectFields() {
         collectFields(this.class)
     }
 
-    private static List<Field> collectFields(Class clazz) {
+    List<Field> collectFields(String cacheVariableName) {
+        collectFields(this.class, cacheVariableName)
+    }
+
+    List<Field> collectFields(Class clazz) {
         def fields = []
 
-        if (clazz) {
-            fields.addAll(clazz.declaredFields as List)
+        fields.addAll(clazz.declaredFields.findAll { isCache(it) })
+
+        if (clazz.superclass) {
             fields.addAll(collectFields(clazz.superclass))
         }
 
         fields
     }
 
-    private static boolean isNamedCache(Field field, String cacheVariableName) {
+    List<Field> collectFields(Class clazz, String cacheVariableName) {
+        def fields = []
+
+        if (clazz) {
+            fields.addAll(clazz.declaredFields.findAll { isNamedCache(it, cacheVariableName) })
+
+            if (clazz.superclass) {
+                fields.addAll(collectFields(clazz.superclass, cacheVariableName))
+            }
+        }
+
+        fields
+    }
+
+    boolean isNamedCache(Field field, String cacheVariableName) {
         isCache(field) && cacheVariableName == field.name
     }
 
-    private static boolean isCache(Field field) {
+    boolean isCache(Field field) {
         isCacheType(field) || isAssignableFromCache(field)
     }
 
-    private static boolean isCacheType(Field field) {
+    Cache getCache(Field field) {
+        field.accessible = true
+
+        field.get(this) as Cache
+    }
+
+    private boolean isCacheType(Field field) {
         field.type == Cache
     }
 
-    private static boolean isAssignableFromCache(Field field) {
+    private boolean isAssignableFromCache(Field field) {
         Cache.isAssignableFrom(field.type)
-    }
-
-    private Cache getCache(Field field) {
-        field.setAccessible(true)
-
-        (Cache) field.get(this)
     }
 }

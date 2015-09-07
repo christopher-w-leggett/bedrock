@@ -1,6 +1,5 @@
 package com.citytechinc.aem.bedrock.models.impl
 
-import com.citytechinc.aem.bedrock.models.utils.ModelUtils
 import org.apache.felix.scr.annotations.Component
 import org.apache.felix.scr.annotations.Property
 import org.apache.felix.scr.annotations.Service
@@ -14,7 +13,7 @@ import java.lang.reflect.Type
 @Component
 @Service(Injector)
 @Property(name = Constants.SERVICE_RANKING, intValue = 2500)
-class ValueMapFromRequestInjector implements Injector {
+class ValueMapFromRequestInjector implements Injector, ModelTrait {
 
     @Override
     String getName() {
@@ -26,7 +25,7 @@ class ValueMapFromRequestInjector implements Injector {
         DisposalCallbackRegistry callbackRegistry) {
         def value = null
 
-        def request = ModelUtils.getRequest(adaptable)
+        def request = getRequest(adaptable)
 
         if (request?.resource) {
             def map = request.resource.valueMap

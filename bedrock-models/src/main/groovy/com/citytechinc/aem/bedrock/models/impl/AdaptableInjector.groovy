@@ -1,6 +1,5 @@
 package com.citytechinc.aem.bedrock.models.impl
 
-import com.citytechinc.aem.bedrock.models.utils.ModelUtils
 import groovy.util.logging.Slf4j
 import org.apache.felix.scr.annotations.Component
 import org.apache.felix.scr.annotations.Property
@@ -19,7 +18,7 @@ import java.lang.reflect.Type
 @Service(Injector)
 @Property(name = Constants.SERVICE_RANKING, intValue = Integer.MIN_VALUE)
 @Slf4j("LOG")
-class AdaptableInjector implements Injector {
+class AdaptableInjector implements Injector, ModelTrait {
 
     @Override
     String getName() {
@@ -28,13 +27,13 @@ class AdaptableInjector implements Injector {
 
     @Override
     Object getValue(Object adaptable, String name, Type type, AnnotatedElement element,
-        DisposalCallbackRegistry registry) {
+                    DisposalCallbackRegistry registry) {
         def value = null
 
         if (type instanceof Class) {
             def clazz = type as Class
 
-            def resourceResolver = ModelUtils.getResource(adaptable)?.resourceResolver
+            def resourceResolver = getResource(adaptable)?.resourceResolver
 
             if (resourceResolver) {
                 value = resourceResolver.adaptTo(clazz)

@@ -1,4 +1,4 @@
-package com.citytechinc.aem.bedrock.models.utils
+package com.citytechinc.aem.bedrock.models.impl
 
 import org.apache.sling.api.SlingHttpServletRequest
 import org.apache.sling.api.resource.Resource
@@ -6,12 +6,9 @@ import org.apache.sling.api.resource.Resource
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
-/**
- * Model utility functions.
- */
-class ModelUtils {
+trait ModelTrait {
 
-    static SlingHttpServletRequest getRequest(Object adaptable) {
+    SlingHttpServletRequest getRequest(Object adaptable) {
         def request = null
 
         if (adaptable instanceof SlingHttpServletRequest) {
@@ -21,7 +18,7 @@ class ModelUtils {
         request
     }
 
-    static Resource getResource(Object adaptable) {
+    Resource getResource(Object adaptable) {
         def resource = null
 
         if (adaptable instanceof Resource) {
@@ -33,27 +30,28 @@ class ModelUtils {
         resource
     }
 
-    static boolean isDeclaredTypeCollection(Type declaredType) {
+    boolean isDeclaredTypeCollection(Type declaredType) {
+        def result = false
+
         if (declaredType instanceof ParameterizedType) {
-            def parameterizedType = (ParameterizedType) declaredType
-            def collectionType = (Class) parameterizedType.rawType
+            def parameterizedType = declaredType as ParameterizedType
+            def collectionType = parameterizedType.rawType as Class
 
-            return Collection.isAssignableFrom(collectionType)
+            result = Collection.isAssignableFrom(collectionType)
         }
 
-        return false
+        result
     }
 
-    static Class getDeclaredClassForDeclaredType(Type declaredType) {
+    Class getDeclaredClassForDeclaredType(Type declaredType) {
+        def clazz
+
         if (isDeclaredTypeCollection(declaredType)) {
-            def parameterizedType = (ParameterizedType) declaredType
-            return (Class) parameterizedType.getActualTypeArguments()[0]
+            clazz = (declaredType as ParameterizedType).actualTypeArguments[0] as Class
+        } else {
+            clazz = declaredType as Class
         }
 
-        return (Class) declaredType
-    }
-
-    private ModelUtils() {
-
+        clazz
     }
 }

@@ -3,26 +3,15 @@ package com.citytechinc.aem.bedrock.core.services.cache
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheStats
 import com.google.common.cache.LoadingCache
-import org.slf4j.Logger
 import spock.lang.Specification
+import spock.lang.Unroll
 
-class AbstractCacheServiceSpec extends Specification {
-
-    class TestCacheService extends AbstractCacheService {
-
-        Cache johnny
-
-        LoadingCache june
-
-        @Override
-        protected Logger getLogger() {
-            [error: {}] as Logger
-        }
-    }
+@Unroll
+class CacheServiceSpec extends Specification {
 
     def "clear all caches"() {
         setup:
-        def cacheService = new TestCacheService()
+        def cacheService = testCacheService
         def johnny = Mock(Cache)
         def june = Mock(LoadingCache)
 
@@ -35,11 +24,14 @@ class AbstractCacheServiceSpec extends Specification {
         then:
         1 * johnny.invalidateAll()
         1 * june.invalidateAll()
+
+        where:
+        testCacheService << [new TestCacheServiceTrait(), new TestCacheService()]
     }
 
     def "clear specific cache"() {
         setup:
-        def cacheService = new TestCacheService()
+        def cacheService = testCacheService
         def johnny = Mock(Cache)
         def june = Mock(LoadingCache)
 
@@ -52,11 +44,14 @@ class AbstractCacheServiceSpec extends Specification {
         then:
         0 * johnny.invalidateAll()
         1 * june.invalidateAll()
+
+        where:
+        testCacheService << [new TestCacheServiceTrait(), new TestCacheService()]
     }
 
     def "get cache size"() {
         setup:
-        def cacheService = new TestCacheService()
+        def cacheService = testCacheService
         def johnny = Mock(Cache) {
             size() >> Long.MAX_VALUE
         }
@@ -65,11 +60,14 @@ class AbstractCacheServiceSpec extends Specification {
 
         expect:
         cacheService.getCacheSize("johnny") == Long.MAX_VALUE
+
+        where:
+        testCacheService << [new TestCacheServiceTrait(), new TestCacheService()]
     }
 
     def "get cache stats"() {
         setup:
-        def cacheService = new TestCacheService()
+        def cacheService = testCacheService
         def johnny = Mock(Cache) {
             stats() >> new CacheStats(Long.MAX_VALUE, 0, 0, 0, 0, 0)
         }
@@ -78,13 +76,16 @@ class AbstractCacheServiceSpec extends Specification {
 
         expect:
         cacheService.getCacheStats("johnny").hitCount() == Long.MAX_VALUE
+
+        where:
+        testCacheService << [new TestCacheServiceTrait(), new TestCacheService()]
     }
 
     def "list caches"() {
-        setup:
-        def cacheService = new TestCacheService()
-
         expect:
         cacheService.listCaches() == ["johnny", "june"]
+
+        where:
+        cacheService << [new TestCacheServiceTrait(), new TestCacheService()]
     }
 }

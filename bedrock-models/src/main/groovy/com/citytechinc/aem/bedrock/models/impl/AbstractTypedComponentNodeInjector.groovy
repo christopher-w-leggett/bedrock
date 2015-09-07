@@ -10,9 +10,8 @@ import org.apache.sling.models.spi.DisposalCallbackRegistry
 import org.apache.sling.models.spi.Injector
 
 import com.citytechinc.aem.bedrock.api.node.ComponentNode
-import com.citytechinc.aem.bedrock.models.utils.ModelUtils
 
-abstract class AbstractTypedComponentNodeInjector<T> implements Injector {
+abstract class AbstractTypedComponentNodeInjector<T> implements Injector, ModelTrait {
 
 	abstract Object getValue(ComponentNode componentNode, String name, Class<T> declaredType, AnnotatedElement element,
 	DisposalCallbackRegistry callbackRegistry)
@@ -25,7 +24,7 @@ abstract class AbstractTypedComponentNodeInjector<T> implements Injector {
 		def value = null
 
 		if (declaredType == clazz) {
-			def componentNode = ModelUtils.getResource(adaptable)?.adaptTo(ComponentNode)
+			def componentNode = getResource(adaptable)?.adaptTo(ComponentNode)
 
 			if (componentNode) {
 				value = getValue(componentNode, element.getAnnotation(Named)?.value() ?: name, declaredType, element, callbackRegistry)

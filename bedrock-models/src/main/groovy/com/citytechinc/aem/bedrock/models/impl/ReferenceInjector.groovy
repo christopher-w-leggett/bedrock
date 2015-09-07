@@ -2,7 +2,7 @@ package com.citytechinc.aem.bedrock.models.impl
 
 import com.citytechinc.aem.bedrock.api.node.ComponentNode
 import com.citytechinc.aem.bedrock.models.annotations.ReferenceInject
-import com.citytechinc.aem.bedrock.models.utils.ModelUtils
+import groovy.transform.TupleConstructor
 import groovy.util.logging.Slf4j
 import org.apache.felix.scr.annotations.Component
 import org.apache.felix.scr.annotations.Property
@@ -15,7 +15,6 @@ import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessor2
 import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessorFactory2
 import org.osgi.framework.Constants
 
-import javax.inject.Named
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Type
 
@@ -23,72 +22,72 @@ import java.lang.reflect.Type
 @Service
 @Property(name = Constants.SERVICE_RANKING, intValue = 4000)
 @Slf4j("LOG")
-class ReferenceInjector extends AbstractComponentNodeInjector implements InjectAnnotationProcessorFactory2 {
+class ReferenceInjector extends AbstractComponentNodeInjector implements InjectAnnotationProcessorFactory2, ModelTrait {
 
-	@Override
-	Object getValue(ComponentNode componentNode, String name, Type declaredType, AnnotatedElement element, DisposalCallbackRegistry callbackRegistry) {
-		def annotation = element.getAnnotation(ReferenceInject)
-		def declaredClass = ModelUtils.getDeclaredClassForDeclaredType(declaredType)
+    @Override
+    Object getValue(ComponentNode componentNode, String name, Type declaredType, AnnotatedElement element,
+        DisposalCallbackRegistry callbackRegistry) {
+        def annotation = element.getAnnotation(ReferenceInject)
+        def declaredClass = getDeclaredClassForDeclaredType(declaredType)
 
-		if (annotation) {
-			def references = annotation.inherit() ? componentNode.getAsListInherited(name, String) : componentNode.getAsList(name, String)
-			def referencedObjects = references.collect {
-				def referencedResource = it.startsWith("/") ?
-						componentNode.resource.resourceResolver.getResource(it) :
-						componentNode.resource.resourceResolver.getResource(componentNode.resource, it)
+        if (annotation) {
+            def references = annotation.inherit() ? componentNode.getAsListInherited(name, String) : componentNode.getAsList(name, String)
 
-				if (!referencedResource) {
-					LOG.warn("Reference " + it + " did not resolve to an accessible Resource")
-				}
-				if (referencedResource && declaredClass != Resource) {
-					def adaptedObject = referencedResource.adaptTo(declaredClass)
+            def resourceResolver = componentNode.resource.resourceResolver
 
-					if (!adaptedObject) {
-						LOG.warn("Resource at " + referencedResource.path + " could not be adapted to an instance of " + declaredClass.name)
-					}
+            def referencedObjects = references.collect {
+                def referencedResource = it.startsWith("/") ? resourceResolver.getResource(it) : resourceResolver.getResource(componentNode.resource, it)
 
-					return adaptedObject
-				}
+                if (!referencedResource) {
+                    LOG.warn("Reference {} did not resolve to an accessible Resource", it)
+                }
 
-				return referencedResource
-			}
+                if (referencedResource && declaredClass != Resource) {
+                    def adaptedObject = referencedResource.adaptTo(declaredClass)
 
-			if (referencedObjects) {
+                    if (!adaptedObject) {
+                        LOG.warn("Resource at {} could not be adapted to an instance of {}", referencedResource.path,
+                            declaredClass.name)
+                    }
 
-				if (!ModelUtils.isDeclaredTypeCollection(declaredType)) {
-					return referencedObjects[0]
-				}
+                    return adaptedObject
+                }
 
-				return referencedObjects
-			}
-		}
+                return referencedResource
+            }
 
-		return null
-	}
+            if (referencedObjects) {
+                if (!isDeclaredTypeCollection(declaredType)) {
+                    return referencedObjects[0]
+                }
 
-	@Override
-	InjectAnnotationProcessor2 createAnnotationProcessor(Object adaptable, AnnotatedElement element) {
-		def annotation = element.getAnnotation(ReferenceInject)
+                return referencedObjects
+            }
+        }
 
-		annotation ? new ReferenceAnnotationProcessor(annotation) : null
-	}
+        null
+    }
 
-	@Override
-	String getName() {
-		ReferenceInject.NAME
-	}
+    @Override
+    InjectAnnotationProcessor2 createAnnotationProcessor(Object adaptable, AnnotatedElement element) {
+        def annotation = element.getAnnotation(ReferenceInject)
 
-	private static class ReferenceAnnotationProcessor extends AbstractInjectAnnotationProcessor2 {
+        annotation ? new ReferenceAnnotationProcessor(annotation) : null
+    }
 
-		private final ReferenceInject annotation
+    @Override
+    String getName() {
+        ReferenceInject.NAME
+    }
 
-		ReferenceAnnotationProcessor(ReferenceInject annotation) {
-			this.annotation = annotation
-		}
+    @TupleConstructor
+    private static class ReferenceAnnotationProcessor extends AbstractInjectAnnotationProcessor2 {
 
-		@Override
-		public InjectionStrategy getInjectionStrategy() {
-			return annotation.injectionStrategy()
-		}
-	}
+        ReferenceInject annotation
+
+        @Override
+        InjectionStrategy getInjectionStrategy() {
+            annotation.injectionStrategy()
+        }
+    }
 }

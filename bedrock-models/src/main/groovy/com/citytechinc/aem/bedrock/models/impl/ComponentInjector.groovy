@@ -4,7 +4,6 @@ import com.citytechinc.aem.bedrock.api.node.BasicNode
 import com.citytechinc.aem.bedrock.api.node.ComponentNode
 import com.citytechinc.aem.bedrock.api.page.PageDecorator
 import com.citytechinc.aem.bedrock.api.page.PageManagerDecorator
-import com.citytechinc.aem.bedrock.models.utils.ModelUtils
 import com.day.cq.wcm.api.Page
 import com.day.cq.wcm.api.PageManager
 import com.day.cq.wcm.api.WCMMode
@@ -45,7 +44,7 @@ import static com.adobe.cq.sightly.WCMBindings.EDIT_CONTEXT
 @Service(Injector)
 @Property(name = Constants.SERVICE_RANKING, intValue = Integer.MAX_VALUE)
 @Slf4j("LOG")
-class ComponentInjector implements Injector {
+class ComponentInjector implements Injector, ModelTrait {
 
     private static final def REQUEST_INJECTABLES = [SlingHttpServletRequest, WCMMode,
         com.day.cq.wcm.api.components.Component, ComponentContext, EditContext, Designer]
@@ -76,8 +75,8 @@ class ComponentInjector implements Injector {
         value
     }
 
-    private static def getValueForRequest(Class clazz, Object adaptable) {
-        def request = ModelUtils.getRequest(adaptable)
+    private def getValueForRequest(Class clazz, Object adaptable) {
+        def request = getRequest(adaptable)
 
         def value = null
 
@@ -110,8 +109,8 @@ class ComponentInjector implements Injector {
         value
     }
 
-    private static def getValueForResource(Class clazz, Object adaptable) {
-        def resource = ModelUtils.getResource(adaptable)
+    private def getValueForResource(Class clazz, Object adaptable) {
+        def resource = getResource(adaptable)
 
         def value = null
 

@@ -1,12 +1,11 @@
 package com.citytechinc.aem.bedrock.models.impl
 
+import com.citytechinc.aem.bedrock.api.node.ComponentNode
+import com.citytechinc.aem.bedrock.models.annotations.TagInject
+import com.day.cq.tagging.Tag
+import com.day.cq.tagging.TagManager
+import groovy.transform.TupleConstructor
 import groovy.util.logging.Slf4j
-
-import java.lang.reflect.AnnotatedElement
-import java.lang.reflect.Type
-
-import javax.inject.Named
-
 import org.apache.felix.scr.annotations.Component
 import org.apache.felix.scr.annotations.Property
 import org.apache.felix.scr.annotations.Service
@@ -18,64 +17,59 @@ import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessor2
 import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessorFactory2
 import org.osgi.framework.Constants
 
-import com.citytechinc.aem.bedrock.api.node.ComponentNode
-import com.citytechinc.aem.bedrock.models.annotations.TagInject
-import com.citytechinc.aem.bedrock.models.utils.ModelUtils
-import com.day.cq.tagging.Tag
-import com.day.cq.tagging.TagManager
+import java.lang.reflect.AnnotatedElement
+import java.lang.reflect.Type
 
 @Component
 @Service
 @Property(name = Constants.SERVICE_RANKING, intValue = 800)
 @Slf4j("LOG")
-class TagInjector extends AbstractComponentNodeInjector implements InjectAnnotationProcessorFactory2, AcceptsNullName {
+class TagInjector extends AbstractComponentNodeInjector implements InjectAnnotationProcessorFactory2, AcceptsNullName,
+    ModelTrait {
 
-	@Override
-	Object getValue(ComponentNode componentNode, String name, Type declaredType, AnnotatedElement element, DisposalCallbackRegistry callbackRegistry) {
-		def annotation = element.getAnnotation(TagInject)
-		def declaredClass = ModelUtils.getDeclaredClassForDeclaredType(declaredType)
+    @Override
+    Object getValue(ComponentNode componentNode, String name, Type declaredType, AnnotatedElement element,
+        DisposalCallbackRegistry callbackRegistry) {
+        def annotation = element.getAnnotation(TagInject)
+        def declaredClass = getDeclaredClassForDeclaredType(declaredType)
 
-		if (declaredClass == Tag) {
-			def tagManager = componentNode.resource.resourceResolver.adaptTo(TagManager)
-			def tagStrings = annotation && annotation.inherit() ? componentNode.getAsListInherited(name, String) : componentNode.getAsList(name, String)
-			def tags = tagStrings.collect { tagManager.resolve(it) }
+        if (declaredClass == Tag) {
+            def tagManager = componentNode.resource.resourceResolver.adaptTo(TagManager)
+            def tagStrings = annotation && annotation.inherit() ? componentNode.getAsListInherited(name, String) : componentNode.getAsList(name, String)
+            def tags = tagStrings.collect { tagManager.resolve(it) }
 
-			if (tags) {
+            if (tags) {
+                if (!isDeclaredTypeCollection(declaredType)) {
+                    return tags[0]
+                }
 
-				if (!ModelUtils.isDeclaredTypeCollection(declaredType)) {
-					return tags[0]
-				}
+                return tags
+            }
+        }
 
-				return tags
-			}
-		}
+        null
+    }
 
-		return null
-	}
+    @Override
+    InjectAnnotationProcessor2 createAnnotationProcessor(Object adaptable, AnnotatedElement element) {
+        def annotation = element.getAnnotation(TagInject)
 
-	@Override
-	InjectAnnotationProcessor2 createAnnotationProcessor(Object adaptable, AnnotatedElement element) {
-		def annotation = element.getAnnotation(TagInject)
+        annotation ? new TagAnnotationProcessor(annotation) : null
+    }
 
-		annotation ? new TagAnnotationProcessor(annotation) : null
-	}
+    @Override
+    String getName() {
+        TagInject.NAME
+    }
 
-	@Override
-	String getName() {
-		TagInject.NAME
-	}
+    @TupleConstructor
+    private static class TagAnnotationProcessor extends AbstractInjectAnnotationProcessor2 {
 
-	private static class TagAnnotationProcessor extends AbstractInjectAnnotationProcessor2 {
+        TagInject annotation
 
-		private final TagInject annotation
-
-		TagAnnotationProcessor(TagInject annotation) {
-			this.annotation = annotation
-		}
-
-		@Override
-		public InjectionStrategy getInjectionStrategy() {
-			return annotation.injectionStrategy()
-		}
-	}
+        @Override
+        InjectionStrategy getInjectionStrategy() {
+            annotation.injectionStrategy()
+        }
+    }
 }
