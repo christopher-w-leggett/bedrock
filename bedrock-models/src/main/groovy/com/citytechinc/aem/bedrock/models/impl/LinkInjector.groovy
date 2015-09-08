@@ -4,6 +4,7 @@ import com.citytechinc.aem.bedrock.api.link.Link
 import com.citytechinc.aem.bedrock.api.node.ComponentNode
 import com.citytechinc.aem.bedrock.core.link.builders.factory.LinkBuilderFactory
 import com.citytechinc.aem.bedrock.models.annotations.LinkInject
+import com.google.common.base.Function
 import com.google.common.base.Optional
 import groovy.transform.TupleConstructor
 import org.apache.felix.scr.annotations.Component
@@ -21,7 +22,7 @@ import org.osgi.framework.Constants
 import java.lang.reflect.AnnotatedElement
 
 @Component
-@Service
+@Service(Injector)
 @Property(name = Constants.SERVICE_RANKING, intValue = 4000)
 class LinkInjector extends AbstractTypedComponentNodeInjector<Link> implements Injector,
     InjectAnnotationProcessorFactory2, AcceptsNullName {
@@ -58,15 +59,12 @@ class LinkInjector extends AbstractTypedComponentNodeInjector<Link> implements I
             pathOptional = componentNode.get(name, String)
         }
 
-        def value = null
-
-        if (pathOptional.present) {
-            def linkBuilder = LinkBuilderFactory.forPath(pathOptional.get()).setTitle(title)
-
-            value = linkBuilder.build()
-        }
-
-        value
+        pathOptional.transform(new Function<String, Link>() {
+            @Override
+            Link apply(String path) {
+                LinkBuilderFactory.forPath(path).setTitle(title).build()
+            }
+        }).orNull()
     }
 
     @Override

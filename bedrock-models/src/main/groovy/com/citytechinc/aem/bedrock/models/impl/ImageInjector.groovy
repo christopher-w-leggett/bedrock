@@ -23,7 +23,8 @@ import java.lang.reflect.AnnotatedElement
 @Component
 @Service(Injector)
 @Property(name = Constants.SERVICE_RANKING, intValue = 4000)
-class ImageInjector extends AbstractTypedComponentNodeInjector<Image> implements Injector, InjectAnnotationProcessorFactory2, AcceptsNullName {
+class ImageInjector extends AbstractTypedComponentNodeInjector<Image> implements Injector,
+    InjectAnnotationProcessorFactory2, AcceptsNullName {
 
     @Override
     String getName() {

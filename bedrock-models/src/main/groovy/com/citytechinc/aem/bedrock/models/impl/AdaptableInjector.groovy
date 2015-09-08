@@ -27,7 +27,7 @@ class AdaptableInjector implements Injector, ModelTrait {
 
     @Override
     Object getValue(Object adaptable, String name, Type type, AnnotatedElement element,
-                    DisposalCallbackRegistry registry) {
+        DisposalCallbackRegistry registry) {
         def value = null
 
         if (type instanceof Class) {

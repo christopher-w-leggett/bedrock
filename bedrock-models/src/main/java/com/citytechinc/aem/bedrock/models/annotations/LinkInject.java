@@ -18,28 +18,25 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Source(LinkInject.NAME)
 public @interface LinkInject {
 
-	String NAME = "links";
+    String NAME = "links";
 
-	/**
-	 * if set to REQUIRED injection is mandatory, if set to OPTIONAL injection
-	 * is optional, in case of DEFAULT the standard annotations (
-	 * {@link org.apache.sling.models.annotations.Optional},
-	 * {@link org.apache.sling.models.annotations.Required}) are used. If even
-	 * those are not available the default injection strategy defined on the
-	 * {@link org.apache.sling.models.annotations.Model} applies. Default value
-	 * = DEFAULT.
-	 * 
-	 * @return Injection strategy
-	 */
-	public InjectionStrategy injectionStrategy() default InjectionStrategy.DEFAULT;
+    /**
+     * if set to REQUIRED injection is mandatory, if set to OPTIONAL injection is optional, in case of DEFAULT the
+     * standard annotations ( {@link org.apache.sling.models.annotations.Optional}, {@link
+     * org.apache.sling.models.annotations.Required}) are used. If even those are not available the default injection
+     * strategy defined on the {@link org.apache.sling.models.annotations.Model} applies. Default value = DEFAULT.
+     *
+     * @return Injection strategy
+     */
+    InjectionStrategy injectionStrategy() default InjectionStrategy.DEFAULT;
 
-	/**
-	 * The property to use for setting the title on the link
-	 */
-	String titleProperty() default "";
+    /**
+     * The property to use for setting the title on the link
+     */
+    String titleProperty() default "";
 
-	/**
-	 * Whether to get the link via inheriting
-	 */
-	boolean inherit() default false;
+    /**
+     * Whether to get the link via inheriting
+     */
+    boolean inherit() default false;
 }

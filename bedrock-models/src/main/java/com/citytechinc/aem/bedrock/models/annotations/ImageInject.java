@@ -18,39 +18,36 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Source(ImageInject.NAME)
 public @interface ImageInject {
 
-	String NAME = "images";
-	String SELF = ".";
-	String IMG_SELECTOR = "img";
+    String NAME = "images";
 
-	/**
-	 * if set to REQUIRED injection is mandatory, if set to OPTIONAL injection
-	 * is optional, in case of DEFAULT the standard annotations (
-	 * {@link org.apache.sling.models.annotations.Optional},
-	 * {@link org.apache.sling.models.annotations.Required}) are used. If even
-	 * those are not available the default injection strategy defined on the
-	 * {@link org.apache.sling.models.annotations.Model} applies. Default value
-	 * = DEFAULT.
-	 * 
-	 * @return Injection strategy
-	 */
-	public InjectionStrategy injectionStrategy() default InjectionStrategy.DEFAULT;
+    String SELF = ".";
 
-	/**
-	 * Whether the image should be attempted to be resolved from the root of the
-	 * resource
-	 */
-	boolean isSelf() default false;
+    String IMG_SELECTOR = "img";
 
-	/**
-	 * Whether to get the link via inheriting
-	 */
-	boolean inherit() default false;
+    /**
+     * if set to REQUIRED injection is mandatory, if set to OPTIONAL injection is optional, in case of DEFAULT the
+     * standard annotations ( {@link org.apache.sling.models.annotations.Optional}, {@link
+     * org.apache.sling.models.annotations.Required}) are used. If even those are not available the default injection
+     * strategy defined on the {@link org.apache.sling.models.annotations.Model} applies. Default value = DEFAULT.
+     *
+     * @return Injection strategy
+     */
+    InjectionStrategy injectionStrategy() default InjectionStrategy.DEFAULT;
 
-	/**
-	 * Selector to set on the injected Image object. This affects the calculated
-	 * source of the image. Defaults to img as this selector will trigger the
-	 * OOB ImageServlet and is usually the selector you want.
-	 */
-	String[] selectors() default { IMG_SELECTOR };
+    /**
+     * Whether the image should be attempted to be resolved from the root of the resource
+     */
+    boolean isSelf() default false;
+
+    /**
+     * Whether to get the link via inheriting
+     */
+    boolean inherit() default false;
+
+    /**
+     * Selector to set on the injected Image object. This affects the calculated source of the image. Defaults to img as
+     * this selector will trigger the OOB ImageServlet and is usually the selector you want.
+     */
+    String[] selectors() default { IMG_SELECTOR };
 
 }
