@@ -56,6 +56,7 @@
             <item name="Predicates" href="predicates.html"/>
             <item name="Services" href="services.html"/>
             <item name="Servlets" href="servlets.html"/>
+            <item name="Sling Models Injectors" href="injectors.html"/>
             <item name="Tag Library" href="tag-library.html"/>
             <!--<item name="Testing" href="testing.html"/>-->
         </menu>
