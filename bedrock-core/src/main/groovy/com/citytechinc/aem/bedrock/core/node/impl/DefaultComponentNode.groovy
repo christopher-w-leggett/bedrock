@@ -19,8 +19,9 @@ import com.google.common.base.Optional
 import com.google.common.base.Predicate
 import com.google.common.collect.FluentIterable
 import com.google.common.collect.Maps
-import groovy.transform.EqualsAndHashCode
 import groovy.util.logging.Slf4j
+import org.apache.commons.lang3.builder.EqualsBuilder
+import org.apache.commons.lang3.builder.HashCodeBuilder
 import org.apache.sling.api.resource.Resource
 
 import java.lang.reflect.Array
@@ -32,7 +33,6 @@ import static com.citytechinc.aem.bedrock.core.node.impl.NodeFunctions.RESOURCE_
 import static com.google.common.base.Preconditions.checkNotNull
 
 @Slf4j("LOG")
-@EqualsAndHashCode(includes = "path")
 final class DefaultComponentNode extends AbstractNode implements ComponentNode {
 
     @Delegate
@@ -45,6 +45,16 @@ final class DefaultComponentNode extends AbstractNode implements ComponentNode {
 
         basicNode = new DefaultBasicNode(resource)
         properties = new HierarchyNodeInheritanceValueMap(resource)
+    }
+
+    @Override
+    boolean equals(Object other) {
+        new EqualsBuilder().append(path, (other as ComponentNode).path).equals
+    }
+
+    @Override
+    int hashCode() {
+        new HashCodeBuilder().append(path).hashCode()
     }
 
     @Override
@@ -108,7 +118,7 @@ final class DefaultComponentNode extends AbstractNode implements ComponentNode {
     }
 
     @Override
-    public <T> List<T> getAsListInherited(String propertyName, Class<T> type) {
+    <T> List<T> getAsListInherited(String propertyName, Class<T> type) {
         properties.getInherited(checkNotNull(propertyName), Array.newInstance(type, 0)) as List
     }
 
@@ -118,7 +128,7 @@ final class DefaultComponentNode extends AbstractNode implements ComponentNode {
     }
 
     @Override
-    public <AdapterType> Optional<AdapterType> getAsTypeInherited(String propertyName, Class<AdapterType> type) {
+    <AdapterType> Optional<AdapterType> getAsTypeInherited(String propertyName, Class<AdapterType> type) {
         getAsTypeOptional(properties.getInherited(checkNotNull(propertyName), ""), type)
     }
 
@@ -142,7 +152,6 @@ final class DefaultComponentNode extends AbstractNode implements ComponentNode {
     @Override
     List<ComponentNode> getComponentNodes(String relativePath) {
         def child = resource.getChild(checkNotNull(relativePath))
-
         def nodes
 
         if (child) {
@@ -167,7 +176,6 @@ final class DefaultComponentNode extends AbstractNode implements ComponentNode {
     @Override
     Optional<BasicNode> getDesignNode() {
         def resourceResolver = resource.resourceResolver
-
         def style = resourceResolver.adaptTo(Designer).getStyle(resource)
         def styleResource = resourceResolver.getResource(style.getPath())
 
@@ -271,7 +279,7 @@ final class DefaultComponentNode extends AbstractNode implements ComponentNode {
         def relativePath = resource.name.equals(JcrConstants.JCR_CONTENT) ? "" : path.substring(
             containingPage.contentResource.path.length() + 1)
 
-        LOG.debug "relative path = {}", relativePath
+        LOG.debug("relative path = {}", relativePath)
 
         def componentNodeFunction = new Function<PageDecorator, Optional<ComponentNode>>() {
             @Override
@@ -314,7 +322,7 @@ final class DefaultComponentNode extends AbstractNode implements ComponentNode {
         // path relative to jcr:content
         def resourcePath = builder.toString()
 
-        LOG.debug "child resource relative path = {}", resourcePath
+        LOG.debug("child resource relative path = {}", resourcePath)
 
         def predicate = new Predicate<PageDecorator>() {
             @Override

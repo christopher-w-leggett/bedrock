@@ -35,7 +35,7 @@ final class SerializeJsonTag extends AbstractComponentInstanceTag {
 
     @Override
     int doEndTag(int scope) {
-        checkArgument(className || instanceName, "className or instanceName is required")
+        checkArgument(className || instanceName, "className or instanceName attribute is required")
 
         try {
             def object

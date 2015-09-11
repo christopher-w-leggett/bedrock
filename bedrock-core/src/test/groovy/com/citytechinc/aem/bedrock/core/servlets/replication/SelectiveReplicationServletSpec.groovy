@@ -1,7 +1,7 @@
 package com.citytechinc.aem.bedrock.core.servlets.replication
 
+import com.citytechinc.aem.bedrock.core.services.SelectiveReplicationService
 import com.citytechinc.aem.bedrock.core.specs.BedrockSpec
-import com.day.cq.replication.Agent
 import com.day.cq.replication.AgentManager
 import com.day.cq.replication.ReplicationActionType
 import com.day.cq.replication.Replicator
@@ -66,12 +66,9 @@ class SelectiveReplicationServletSpec extends BedrockSpec {
 
         def response = responseBuilder.build()
 
-        def agent = Mock(Agent)
-        def agentManager = Mock(AgentManager)
-        def replicator = Mock(Replicator)
+        def replicationService = Mock(SelectiveReplicationService)
 
-        servlet.agentManager = agentManager
-        servlet.replicator = replicator
+        servlet.replicationService = replicationService
 
         def json = new JsonBuilder(paths).toString()
 
@@ -79,8 +76,7 @@ class SelectiveReplicationServletSpec extends BedrockSpec {
         servlet.doPost(request, response)
 
         then:
-        1 * agentManager.agents >> ["publish": agent]
-        2 * replicator.replicate(*_)
+        2 * replicationService.replicate(*_)
 
         then:
         response.contentAsString == json

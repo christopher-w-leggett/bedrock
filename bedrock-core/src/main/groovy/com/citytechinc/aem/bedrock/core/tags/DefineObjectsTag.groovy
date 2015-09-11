@@ -2,7 +2,7 @@ package com.citytechinc.aem.bedrock.core.tags
 
 import com.citytechinc.aem.bedrock.api.components.annotations.AutoInstantiate
 import com.citytechinc.aem.bedrock.api.page.PageManagerDecorator
-import com.citytechinc.aem.bedrock.core.bindings.BedrockBindings
+import com.citytechinc.aem.bedrock.core.bindings.WCMModeBindings
 import com.day.cq.wcm.api.components.Component
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.StringUtils
@@ -37,8 +37,8 @@ final class DefineObjectsTag extends AbstractComponentInstanceTag {
             def resource = slingRequest.resource
             def sling = pageContext.getAttribute(DEFAULT_SLING_NAME) as SlingScriptHelper
 
-            LOG.debug "instantiated component request for resource path = {} with type = {} and script = {}",
-                resource.path, resource.resourceType, sling.script.scriptResource.path
+            LOG.debug("instantiated component request for resource path = {} with type = {} and script = {}",
+                resource.path, resource.resourceType, sling.script.scriptResource.path)
         }
 
         instantiateComponentClass()
@@ -52,8 +52,8 @@ final class DefineObjectsTag extends AbstractComponentInstanceTag {
      * @param slingRequest current Sling request
      */
     private void setBindings(SlingHttpServletRequest slingRequest) {
-        // add bedrock attributes to page context
-        def bindings = new BedrockBindings(slingRequest)
+        // add mode attributes to page context
+        def bindings = new WCMModeBindings(slingRequest)
 
         bindings.each { key, value ->
             pageContext.setAttribute(key, value)
@@ -86,7 +86,7 @@ final class DefineObjectsTag extends AbstractComponentInstanceTag {
             try {
                 clazz = !className ? null : Class.forName(className)
             } catch (ClassNotFoundException e) {
-                LOG.error "class not found for name = $className", e
+                LOG.error("class not found for name = $className", e)
 
                 throw new JspTagException(e)
             }
@@ -94,11 +94,11 @@ final class DefineObjectsTag extends AbstractComponentInstanceTag {
             if (clazz) {
                 setComponentInstance(clazz, className)
             } else {
-                LOG.debug "class not found for component = {}, not instantiating component class",
-                    component.resourceType
+                LOG.debug("class not found for component = {}, not instantiating component class",
+                    component.resourceType)
             }
         } else {
-            LOG.debug "component is null, not instantiating component class"
+            LOG.debug("component is null, not instantiating component class")
         }
     }
 
@@ -108,13 +108,13 @@ final class DefineObjectsTag extends AbstractComponentInstanceTag {
             def instanceName = autoInstantiate.instanceName() ?: StringUtils.uncapitalize(clazz.simpleName)
             def instance = getInstance(clazz)
 
-            LOG.debug "class name = {}, instance name = {}, setting component in page context", className,
-                instanceName
+            LOG.debug("class name = {}, instance name = {}, setting component in page context", className,
+                instanceName)
 
             pageContext.setAttribute(instanceName, instance)
             pageContext.setAttribute(ATTR_COMPONENT_INSTANCE_NAME, instanceName)
         } else {
-            LOG.debug "annotation not present for class name = {}, not instantiating component class", className
+            LOG.debug("annotation not present for class name = {}, not instantiating component class", className)
         }
     }
 }

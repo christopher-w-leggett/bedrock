@@ -36,6 +36,8 @@ The backing Java class for the component should expose getters for the values th
 
     import java.util.List;
 
+	@Model(adaptables=[Resource,SlingHttpServletRequest],
+		defaultInjectionStrategy=DefaultInjectionStrategy.OPTIONAL)
     public final class Navigation extends AbstractComponent {
 
         public String getTitle() {
@@ -49,7 +51,7 @@ The backing Java class for the component should expose getters for the values th
 
 ### Abstract Component Java Class
 
-The `AbstractComponent` class should be extended by all component backing classes.  This class contains an `init` method with a `ComponentRequest` argument which can be overridden to provide component-specific initialization functionality.  In addition to the numerous getters for retrieving and transforming properties on the current component node, the base class also exposes `getComponent` methods to acquire instances of other components from either an absolute path or a `ComponentNode`.
+The `AbstractComponent` class should be extended by all component backing classes.  In addition to the numerous getters for retrieving and transforming properties on the current component node, the base class also exposes `getComponent` methods to acquire instances of other components from either an absolute path or a `ComponentNode`.
 
     final PageDecorator homepage = request.getPageManager().getPage("/content/home");
 

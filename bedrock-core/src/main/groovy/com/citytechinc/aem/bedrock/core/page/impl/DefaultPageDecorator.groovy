@@ -15,19 +15,18 @@ import com.citytechinc.aem.bedrock.core.node.predicates.ComponentNodePropertyVal
 import com.day.cq.commons.Filter
 import com.day.cq.wcm.api.NameConstants
 import com.day.cq.wcm.api.Page
+import com.google.common.base.Objects
 import com.google.common.base.Optional
 import com.google.common.base.Predicate
 import com.google.common.base.Predicates
-import groovy.transform.EqualsAndHashCode
-import groovy.transform.ToString
+import org.apache.commons.lang3.builder.EqualsBuilder
+import org.apache.commons.lang3.builder.HashCodeBuilder
 import org.apache.sling.api.resource.Resource
 import org.apache.sling.api.resource.ValueMap
 
 import static com.citytechinc.aem.bedrock.core.node.impl.NodeFunctions.RESOURCE_TO_COMPONENT_NODE
 import static com.google.common.base.Preconditions.checkNotNull
 
-@ToString(includes = ["path", "title"])
-@EqualsAndHashCode(includes = "path")
 final class DefaultPageDecorator implements PageDecorator {
 
     private static final Predicate<PageDecorator> ALL = Predicates.alwaysTrue()
@@ -58,6 +57,24 @@ final class DefaultPageDecorator implements PageDecorator {
     }
 
     @Override
+    boolean equals(Object other) {
+        new EqualsBuilder().append(path, (other as PageDecorator).path).equals
+    }
+
+    @Override
+    int hashCode() {
+        new HashCodeBuilder().append(path).hashCode()
+    }
+
+    @Override
+    String toString() {
+        Objects.toStringHelper(this)
+            .add("path", path)
+            .add("title", title)
+            .toString()
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     <AdapterType> AdapterType adaptTo(Class<AdapterType> type) {
         def result
@@ -79,12 +96,12 @@ final class DefaultPageDecorator implements PageDecorator {
     }
 
     @Override
-    public <T> T get(String propertyName, T defaultValue) {
+    <T> T get(String propertyName, T defaultValue) {
         getInternal({ componentNode -> componentNode.get(propertyName, defaultValue) }, defaultValue)
     }
 
     @Override
-    public <T> Optional<T> get(String propertyName, Class<T> type) {
+    <T> Optional<T> get(String propertyName, Class<T> type) {
         getInternal({ componentNode -> componentNode.get(propertyName, type) }, Optional.absent())
     }
 
@@ -119,7 +136,7 @@ final class DefaultPageDecorator implements PageDecorator {
     }
 
     @Override
-    public <T> List<T> getAsList(String propertyName, Class<T> type) {
+    <T> List<T> getAsList(String propertyName, Class<T> type) {
         getInternal({ componentNode -> componentNode.getAsList(propertyName, type) }, Collections.emptyList())
     }
 
@@ -129,7 +146,7 @@ final class DefaultPageDecorator implements PageDecorator {
     }
 
     @Override
-    public <AdapterType> Optional<AdapterType> getAsType(String propertyName, Class<AdapterType> type) {
+    <AdapterType> Optional<AdapterType> getAsType(String propertyName, Class<AdapterType> type) {
         getInternal({ componentNode -> componentNode.getAsType(propertyName, type) }, Optional.absent())
     }
 
@@ -174,12 +191,12 @@ final class DefaultPageDecorator implements PageDecorator {
     }
 
     @Override
-    public <T> T getInherited(String propertyName, T defaultValue) {
+    <T> T getInherited(String propertyName, T defaultValue) {
         getInternal({ componentNode -> componentNode.getInherited(propertyName, defaultValue) }, defaultValue)
     }
 
     @Override
-    public <T> Optional<T> getInherited(String propertyName, Class<T> type) {
+    <T> Optional<T> getInherited(String propertyName, Class<T> type) {
         getInternal({ componentNode -> componentNode.getInherited(propertyName, type) }, Optional.absent())
     }
 
@@ -214,7 +231,7 @@ final class DefaultPageDecorator implements PageDecorator {
     }
 
     @Override
-    public <T> List<T> getAsListInherited(String propertyName, Class<T> type) {
+    <T> List<T> getAsListInherited(String propertyName, Class<T> type) {
         getInternal({ componentNode -> componentNode.getAsListInherited(propertyName, type) }, Collections.emptyList())
     }
 
@@ -224,7 +241,7 @@ final class DefaultPageDecorator implements PageDecorator {
     }
 
     @Override
-    public <AdapterType> Optional<AdapterType> getAsTypeInherited(String propertyName, Class<AdapterType> type) {
+    <AdapterType> Optional<AdapterType> getAsTypeInherited(String propertyName, Class<AdapterType> type) {
         getInternal({ componentNode -> componentNode.getAsTypeInherited(propertyName, type) }, Optional.absent())
     }
 
@@ -288,8 +305,7 @@ final class DefaultPageDecorator implements PageDecorator {
     @Override
     List<PageDecorator> findDescendants(Predicate<PageDecorator> predicate) {
         def pages = []
-
-        def pageManager = getPageManagerDecorator()
+        def pageManager = this.pageManager
 
         delegate.listChildren(ALL_PAGES, true).each { child ->
             PageDecorator page = pageManager.getPage(child)
@@ -411,22 +427,22 @@ final class DefaultPageDecorator implements PageDecorator {
 
     @Override
     PageDecorator getAbsoluteParent(int level) {
-        getPageDecorator(delegate.getAbsoluteParent(level))
+        pageManager.getPage(delegate.getAbsoluteParent(level))
     }
 
     @Override
     PageManagerDecorator getPageManager() {
-        getPageManagerDecorator()
+        delegate.adaptTo(Resource).resourceResolver.adaptTo(PageManagerDecorator)
     }
 
     @Override
     PageDecorator getParent() {
-        getPageDecorator(delegate.parent)
+        pageManager.getPage(delegate.parent)
     }
 
     @Override
     PageDecorator getParent(int level) {
-        getPageDecorator(delegate.getParent(level))
+        pageManager.getPage(delegate.getParent(level))
     }
 
     @Override
@@ -446,15 +462,11 @@ final class DefaultPageDecorator implements PageDecorator {
 
     // internals
 
-    private def getPageDecorator(Page page) {
-        page ? new DefaultPageDecorator(page) : null
-    }
-
-    private def getInternal(Closure closure, defaultValue) {
+    private <T> T getInternal(Closure<T> closure, T defaultValue) {
         componentNodeOptional.present ? closure.call(componentNodeOptional.get()) : defaultValue
     }
 
-    private def findAncestorForPredicate(Predicate<ComponentNode> predicate) {
+    private Optional<PageDecorator> findAncestorForPredicate(Predicate<ComponentNode> predicate) {
         PageDecorator page = this
         PageDecorator ancestorPage = null
 
@@ -472,10 +484,9 @@ final class DefaultPageDecorator implements PageDecorator {
         Optional.fromNullable(ancestorPage)
     }
 
-    private def filterChildren(Predicate<PageDecorator> predicate, boolean deep) {
+    private List<PageDecorator> filterChildren(Predicate<PageDecorator> predicate, boolean deep) {
         def pages = []
-
-        def pageManager = getPageManagerDecorator()
+        def pageManager = this.pageManager
 
         delegate.listChildren(ALL_PAGES, deep).each { child ->
             def page = pageManager.getPage(child)
@@ -486,9 +497,5 @@ final class DefaultPageDecorator implements PageDecorator {
         }
 
         pages
-    }
-
-    private def getPageManagerDecorator() {
-        delegate.adaptTo(Resource).getResourceResolver().adaptTo(PageManagerDecorator)
     }
 }

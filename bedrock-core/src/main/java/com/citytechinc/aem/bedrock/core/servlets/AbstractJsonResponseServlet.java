@@ -25,8 +25,6 @@ public abstract class AbstractJsonResponseServlet extends SlingAllMethodsServlet
 
     private static final JsonFactory FACTORY = new JsonFactory().disable(Feature.AUTO_CLOSE_TARGET);
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
-
     private static final MediaType MEDIA_TYPE = MediaType.JSON_UTF_8;
 
     private static final String ENCODING = MEDIA_TYPE.charset().get().name();
@@ -73,7 +71,7 @@ public abstract class AbstractJsonResponseServlet extends SlingAllMethodsServlet
         final String dateFormat, final Locale locale) throws IOException {
         final SimpleDateFormat format = new SimpleDateFormat(dateFormat, locale);
 
-        writeJsonResponse(response, MAPPER.setDateFormat(format), object);
+        writeJsonResponse(response, new ObjectMapper().setDateFormat(format), object);
     }
 
     /**

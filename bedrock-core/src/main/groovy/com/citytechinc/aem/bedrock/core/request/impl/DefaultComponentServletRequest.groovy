@@ -1,6 +1,8 @@
 package com.citytechinc.aem.bedrock.core.request.impl
 
-import com.citytechinc.aem.bedrock.api.request.ComponentResourceRequest
+import com.citytechinc.aem.bedrock.api.node.ComponentNode
+import com.citytechinc.aem.bedrock.api.page.PageDecorator
+import com.citytechinc.aem.bedrock.api.page.PageManagerDecorator
 import com.citytechinc.aem.bedrock.api.request.ComponentServletRequest
 import com.day.cq.wcm.api.WCMMode
 import com.google.common.base.Function
@@ -10,14 +12,15 @@ import org.apache.sling.api.SlingHttpServletRequest
 import org.apache.sling.api.SlingHttpServletResponse
 import org.apache.sling.api.request.RequestParameter
 import org.apache.sling.api.resource.Resource
+import org.apache.sling.api.resource.ResourceResolver
+import org.apache.sling.api.resource.ValueMap
 
-import javax.script.Bindings
+import javax.jcr.Node
+import javax.jcr.Session
 
 import static com.day.cq.wcm.api.WCMMode.fromRequest
 import static com.google.common.base.Preconditions.checkNotNull
-import static org.apache.sling.api.scripting.SlingBindings.REQUEST
-import static org.apache.sling.api.scripting.SlingBindings.RESOURCE
-import static org.apache.sling.api.scripting.SlingBindings.RESPONSE
+import static org.apache.sling.api.resource.ValueMap.EMPTY
 
 final class DefaultComponentServletRequest implements ComponentServletRequest {
 
@@ -39,23 +42,34 @@ final class DefaultComponentServletRequest implements ComponentServletRequest {
 
     final SlingHttpServletResponse slingResponse
 
-    @Delegate
-    private final ComponentResourceRequest delegate
+    final ComponentNode componentNode
 
-    DefaultComponentServletRequest(Bindings bindings) {
-        checkNotNull(bindings)
+    final Node currentNode
 
-        slingRequest = bindings.get(REQUEST) as SlingHttpServletRequest
-        slingResponse = bindings.get(RESPONSE) as SlingHttpServletResponse
+    final PageDecorator currentPage
 
-        delegate = new DefaultComponentResourceRequest(bindings.get(RESOURCE) as Resource)
-    }
+    final PageManagerDecorator pageManager
+
+    final ValueMap pageProperties
+
+    final ValueMap properties
+
+    final Resource resource
+
+    final ResourceResolver resourceResolver
 
     DefaultComponentServletRequest(SlingHttpServletRequest slingRequest, SlingHttpServletResponse slingResponse) {
         this.slingRequest = checkNotNull(slingRequest)
         this.slingResponse = checkNotNull(slingResponse)
 
-        delegate = new DefaultComponentResourceRequest(slingRequest.resource)
+        resource = slingRequest.resource
+        resourceResolver = resource.resourceResolver
+        properties = resource.valueMap
+        currentNode = resource.adaptTo(Node)
+        componentNode = resource.adaptTo(ComponentNode)
+        pageManager = resourceResolver.adaptTo(PageManagerDecorator)
+        currentPage = pageManager.getContainingPage(resource)
+        pageProperties = currentPage ? currentPage.properties : EMPTY
     }
 
     @Override
@@ -85,6 +99,11 @@ final class DefaultComponentServletRequest implements ComponentServletRequest {
     @Override
     List<String> getSelectors() {
         ImmutableList.copyOf(slingRequest.requestPathInfo.selectors)
+    }
+
+    @Override
+    Session getSession() {
+        resourceResolver.adaptTo(Session)
     }
 
     @Override

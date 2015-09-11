@@ -24,6 +24,11 @@ The including project's Core module POM must also include the Bedrock API and Co
             <artifactId>bedrock-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.citytechinc.aem.bedrock</groupId>
+            <artifactId>bedrock-models</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 Additionally, the project's UI module POM must include the Bedrock UI dependency.
