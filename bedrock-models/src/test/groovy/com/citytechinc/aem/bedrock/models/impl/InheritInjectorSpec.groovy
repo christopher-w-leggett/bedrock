@@ -27,7 +27,8 @@ class InheritInjectorSpec extends BedrockModelSpec {
 		pageBuilder.content {
 			citytechinc {
 				"jcr:content" { component("title": "Testing Component","items": ["item1", "item2"])}
-				page1 { "jcr:content" { component() } }
+				page1 { "jcr:content" { component()
+					} }
 			}
 		}
 	}
