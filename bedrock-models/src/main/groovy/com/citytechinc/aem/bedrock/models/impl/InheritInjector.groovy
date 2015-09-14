@@ -2,7 +2,10 @@ package com.citytechinc.aem.bedrock.models.impl
 
 import com.citytechinc.aem.bedrock.api.node.ComponentNode
 import com.citytechinc.aem.bedrock.models.annotations.InheritInject
+
 import groovy.transform.TupleConstructor
+import groovy.util.logging.Slf4j
+
 import org.apache.felix.scr.annotations.Component
 import org.apache.felix.scr.annotations.Property
 import org.apache.felix.scr.annotations.Service
@@ -21,6 +24,7 @@ import java.lang.reflect.Type
 @Component
 @Service(Injector)
 @Property(name = Constants.SERVICE_RANKING, intValue = 4000)
+@Slf4j("LOG")
 class InheritInjector extends AbstractComponentNodeInjector implements InjectAnnotationProcessorFactory2 {
 
 	@Override
@@ -37,10 +41,12 @@ class InheritInjector extends AbstractComponentNodeInjector implements InjectAnn
 			def enumString = componentNode.getInherited(name, String)
 
 			value = enumString.present ? declaredType[enumString.get()] : null
-		} else if (!(declaredType instanceof ParameterizedType)) {
-			value = componentNode.getInherited(name, declaredType).orNull()
 		}
-
+		try{
+			value = componentNode.getInherited(name, declaredType).orNull()
+		}catch(Exception e){
+			LOG.debug("Error getting object inherited", e)
+		}
 		value
 	}
 

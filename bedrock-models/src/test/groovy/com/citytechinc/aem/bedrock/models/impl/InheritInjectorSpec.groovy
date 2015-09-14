@@ -9,7 +9,6 @@ import org.apache.sling.models.annotations.Model
 import org.apache.sling.models.annotations.Optional
 
 import com.citytechinc.aem.bedrock.models.annotations.InheritInject
-import com.citytechinc.aem.bedrock.models.impl.EnumInjectorSpec.Beer
 import com.citytechinc.aem.bedrock.models.specs.BedrockModelSpec
 
 class InheritInjectorSpec extends BedrockModelSpec {
@@ -19,12 +18,15 @@ class InheritInjectorSpec extends BedrockModelSpec {
 
 		@InheritInject
 		String title
+
+		@InheritInject
+		String[] items
 	}
 
 	def setupSpec() {
 		pageBuilder.content {
 			citytechinc {
-				"jcr:content" { component("title": "Testing Component") }
+				"jcr:content" { component("title": "Testing Component","items": ["item1", "item2"])}
 				page1 { "jcr:content" { component() } }
 			}
 		}
@@ -37,5 +39,6 @@ class InheritInjectorSpec extends BedrockModelSpec {
 
 		expect:
 		component.title == "Testing Component"
+		component.items.length == 2
 	}
 }
