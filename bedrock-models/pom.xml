@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.citytechinc.aem.bedrock</groupId>
         <artifactId>bedrock</artifactId>
-        <version>4.0.0</version>
+        <version>4.0.1</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -105,8 +105,7 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
+<profiles>
         <!-- activate this profile to enable logging of test executions -->
         <profile>
             <id>test-logging</id>
