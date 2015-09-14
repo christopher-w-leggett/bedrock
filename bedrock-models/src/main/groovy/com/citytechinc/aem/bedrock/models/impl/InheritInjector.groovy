@@ -23,42 +23,42 @@ import java.lang.reflect.Type
 @Property(name = Constants.SERVICE_RANKING, intValue = 4000)
 class InheritInjector extends AbstractComponentNodeInjector implements InjectAnnotationProcessorFactory2 {
 
-    @Override
-    String getName() {
-        InheritInject.NAME
-    }
+	@Override
+	String getName() {
+		InheritInject.NAME
+	}
 
-    @Override
-    Object getValue(ComponentNode componentNode, String name, Type declaredType, AnnotatedElement element,
-        DisposalCallbackRegistry callbackRegistry) {
-        def value = null
+	@Override
+	Object getValue(ComponentNode componentNode, String name, Type declaredType, AnnotatedElement element,
+			DisposalCallbackRegistry callbackRegistry) {
+		def value = null
 
-        if (declaredType instanceof Class && declaredType.enum) {
-            def enumString = componentNode.getInherited(name, String)
+		if (declaredType instanceof Class && declaredType.enum) {
+			def enumString = componentNode.getInherited(name, String)
 
-            value = enumString.present ? declaredType[enumString.get()] : null
-        } else if (!declaredType instanceof ParameterizedType) {
-            value = componentNode.getInherited(name, declaredType).orNull()
-        }
+			value = enumString.present ? declaredType[enumString.get()] : null
+		} else if (!(declaredType instanceof ParameterizedType)) {
+			value = componentNode.getInherited(name, declaredType).orNull()
+		}
 
-        value
-    }
+		value
+	}
 
-    @Override
-    InjectAnnotationProcessor2 createAnnotationProcessor(Object adaptable, AnnotatedElement element) {
-        def annotation = element.getAnnotation(InheritInject)
+	@Override
+	InjectAnnotationProcessor2 createAnnotationProcessor(Object adaptable, AnnotatedElement element) {
+		def annotation = element.getAnnotation(InheritInject)
 
-        annotation ? new InheritAnnotationProcessor(annotation) : null
-    }
+		annotation ? new InheritAnnotationProcessor(annotation) : null
+	}
 
-    @TupleConstructor
-    private static class InheritAnnotationProcessor extends AbstractInjectAnnotationProcessor2 {
+	@TupleConstructor
+	private static class InheritAnnotationProcessor extends AbstractInjectAnnotationProcessor2 {
 
-        InheritInject annotation
+		InheritInject annotation
 
-        @Override
-        InjectionStrategy getInjectionStrategy() {
-            return annotation.injectionStrategy()
-        }
-    }
+		@Override
+		InjectionStrategy getInjectionStrategy() {
+			return annotation.injectionStrategy()
+		}
+	}
 }
