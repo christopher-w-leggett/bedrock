@@ -106,7 +106,7 @@
         </plugins>
     </build>
 
-    <profiles>
+    <version xmlns="">4.0.1-SNAPSHOT</version><profiles>
         <!-- activate this profile to enable logging of test executions -->
         <profile>
             <id>test-logging</id>
