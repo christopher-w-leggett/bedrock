@@ -44,7 +44,7 @@ import static com.citytechinc.aem.bedrock.core.constants.PathConstants.EXTENSION
  * while this servlet will pull content from any container on the Page regardless of depth of nesting.  Concretely, if
  * your page has nested paragraph systems, the OOB paragraph servlet will not recognize and collect components within
  * the nested paragraph systems while this servlet will.
- * <p/>
+ * <p>
  * This Servlet is suitable for overriding the OOB behavior of xtypes such as paragraphreference, causing it to pull all
  * components on a page as opposed to the top level components.
  */
@@ -96,7 +96,7 @@ public final class ParagraphJsonServlet extends AbstractComponentServlet {
     }
 
     /**
-     * @param request
+     * @param request component servlet request
      * @return A List of Paragraphs representing all components which exist within containers under a given Page
      * @throws RepositoryException
      * @throws ServletException

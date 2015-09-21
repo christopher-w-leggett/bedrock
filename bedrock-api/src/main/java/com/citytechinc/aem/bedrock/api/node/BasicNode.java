@@ -1,7 +1,7 @@
 package com.citytechinc.aem.bedrock.api.node;
 
-import com.citytechinc.aem.bedrock.api.ImageSource;
 import com.citytechinc.aem.bedrock.api.Accessible;
+import com.citytechinc.aem.bedrock.api.ImageSource;
 import com.citytechinc.aem.bedrock.api.Linkable;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -16,7 +16,7 @@ import java.util.List;
  * Represents a "basic" node in the JCR, typically an unstructured node that may or may not exist in a CQ page
  * hierarchy.  Examples of non-page descendant nodes that could be considered basic nodes include design nodes and
  * arbitrary unstructured nodes that do not require inheritance capabilities.
- * <p/>
+ * <p>
  * Many methods return an <a href="https://code.google.com/p/guava-libraries/wiki/UsingAndAvoidingNullExplained#Optional">Optional</a>
  * type where a null instance would otherwise be returned (e.g. when a descendant node is requested for a path that does
  * not exist in the repository).
