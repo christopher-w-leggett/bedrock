@@ -34,16 +34,18 @@ class InheritInjector extends AbstractComponentNodeInjector implements InjectAnn
         DisposalCallbackRegistry callbackRegistry) {
         def value = null
 
-        if (declaredType instanceof Class && declaredType.enum) {
-            def enumString = componentNode.getInherited(name, String)
+        if (element.getAnnotation(InheritInject)) {
+            if (declaredType instanceof Class && declaredType.enum) {
+                def enumString = componentNode.getInherited(name, String)
 
-            value = enumString.present ? declaredType[enumString.get()] : null
-        }
+                value = enumString.present ? declaredType[enumString.get()] : null
+            }
 
-        try {
-            value = componentNode.getInherited(name, declaredType as Class).orNull()
-        } catch (Exception e) {
-            LOG.debug("Error getting object inherited", e)
+            try {
+                value = componentNode.getInherited(name, declaredType as Class).orNull()
+            } catch (Exception e) {
+                LOG.debug("Error getting object inherited", e)
+            }
         }
 
         value
