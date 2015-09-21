@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Listeners extending this class need to add the following SCR annotations to register the listener.
- * <p/>
+ * <p>
  * <pre>
  * {@literal @}Component(immediate = true, metatype = true, inherit = true)
  * {@literal @}Service

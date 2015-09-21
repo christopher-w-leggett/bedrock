@@ -3,31 +3,48 @@ package com.citytechinc.aem.bedrock.models.impl
 import com.citytechinc.aem.bedrock.api.node.ComponentNode
 import com.citytechinc.aem.bedrock.api.page.PageManagerDecorator
 import com.citytechinc.aem.bedrock.core.specs.BedrockSpec
-import spock.lang.Shared
+import org.apache.sling.api.SlingHttpServletRequest
+import org.apache.sling.models.annotations.DefaultInjectionStrategy
+import org.apache.sling.models.annotations.Model
+
+import javax.inject.Inject
+
+import static org.osgi.framework.Constants.SERVICE_RANKING
 
 class AdaptableInjectorSpec extends BedrockSpec {
 
-    @Shared
-    AdaptableInjector injector = new AdaptableInjector()
+    @Model(adaptables = SlingHttpServletRequest, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
+    static class AdaptableModel {
 
-    def "get value returns null when resource or request is null"() {
-        expect:
-        !injector.getValue(null, null, PageManagerDecorator, null, null)
+        @Inject
+        PageManagerDecorator pageManager
+
+        @Inject
+        ComponentNode componentNode
+    }
+
+    def setupSpec() {
+        slingContext.with {
+            registerInjectActivateService(new AdaptableInjector(), [(SERVICE_RANKING): Integer.MIN_VALUE])
+            addModelsForPackage(this.class.package.name)
+        }
     }
 
     def "get value returns null for invalid adapter type"() {
         setup:
         def request = requestBuilder.build()
+        def model = request.adaptTo(AdaptableModel)
 
         expect:
-        !injector.getValue(request, null, ComponentNode, null, null)
+        !model.componentNode
     }
 
     def "get value returns non-null for valid adapter type"() {
         setup:
         def request = requestBuilder.build()
+        def model = request.adaptTo(AdaptableModel)
 
         expect:
-        injector.getValue(request, null, PageManagerDecorator, null, null)
+        model.pageManager
     }
 }
