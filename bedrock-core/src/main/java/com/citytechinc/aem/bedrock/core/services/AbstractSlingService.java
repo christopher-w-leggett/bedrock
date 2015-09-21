@@ -32,12 +32,18 @@ public abstract class AbstractSlingService {
     /**
      * Activate this service. Extending classes should call <code>getAdministrativeResourceResolver()</code> and/or
      * <code>getAdministrativeSession()</code> in this method.
+     *
+     * @param componentContext
+     * @param properties
      */
     protected abstract void activate(final ComponentContext componentContext, final Map<String, Object> properties);
 
     /**
      * Deactivate this service. Extending classes should call <code>closeResourceResolver()</code> and
      * <code>closeSession()</code> in this method.
+     *
+     * @param componentContext
+     * @param properties
      */
     protected abstract void deactivate(final ComponentContext componentContext, final Map<String, Object> properties);
 
