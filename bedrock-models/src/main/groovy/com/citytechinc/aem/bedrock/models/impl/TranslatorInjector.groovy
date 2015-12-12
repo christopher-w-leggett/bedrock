@@ -21,6 +21,7 @@ import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessorFac
 import org.osgi.framework.BundleContext
 import org.osgi.framework.Constants
 import org.osgi.util.tracker.ServiceTracker
+import org.slf4j.LoggerFactory
 
 import java.lang.reflect.AnnotatedElement
 
@@ -29,8 +30,9 @@ import java.lang.reflect.AnnotatedElement
 @Property(name = Constants.SERVICE_RANKING, intValue = 4000)
 class TranslatorInjector extends AbstractTypedComponentNodeInjector<String> implements Injector,
     InjectAnnotationProcessorFactory2, AcceptsNullName {
+    private static final def LOGGER = LoggerFactory.getLogger(TranslatorInjector)
 
-    private def resourceBundleProviderTracker;
+    private def resourceBundleProviderTracker
 
     @Override
     String getName() {
@@ -55,7 +57,7 @@ class TranslatorInjector extends AbstractTypedComponentNodeInjector<String> impl
                 try {
                     value = i18n.get(translatorAnnotation.key())
                 } catch (final MissingResourceException e) {
-                    //LOGGER.error("Could not find translation for key '" + key + "'.");
+                    LOGGER.error("Could not find translation for key '" + translatorAnnotation.key() + "'.");
                 }
             }
         }
