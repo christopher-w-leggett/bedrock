@@ -55,9 +55,9 @@ class TranslatorInjector extends AbstractTypedComponentNodeInjector<String> impl
             if (resourceBundle.present) {
                 def i18n = new I18n(resourceBundle.get())
                 try {
-                    value = i18n.get(translatorAnnotation.key())
+                    value = i18n.get(translatorAnnotation.text(), translatorAnnotation.comment())
                 } catch (final MissingResourceException e) {
-                    LOGGER.error("Could not find translation for key '" + translatorAnnotation.key() + "'.");
+                    LOGGER.error("Could not find translation for text '" + translatorAnnotation.text() + "'.");
                 }
             }
         }

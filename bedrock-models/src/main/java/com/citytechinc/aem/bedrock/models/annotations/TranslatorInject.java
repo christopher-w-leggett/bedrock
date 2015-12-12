@@ -40,9 +40,14 @@ public @interface TranslatorInject {
     InjectionStrategy injectionStrategy() default InjectionStrategy.DEFAULT;
 
     /**
-     * The key for the translation in the AEM translator.
+     * The text to translate..
      */
-    String key();
+    String text();
+
+    /**
+     * A comment for translators to specify the context in which the text is used.
+     */
+    String comment() default "";
 
     /**
      * The locale resolver to use when resolving the locale.
