@@ -5,6 +5,7 @@ import com.citytechinc.aem.bedrock.models.annotations.TranslatorInject
 import com.day.cq.i18n.I18n
 import com.google.common.base.Optional
 import groovy.transform.TupleConstructor
+import groovy.util.logging.Slf4j
 import org.apache.felix.scr.annotations.Activate
 import org.apache.felix.scr.annotations.Component
 import org.apache.felix.scr.annotations.Deactivate
@@ -20,19 +21,21 @@ import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessor2
 import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessorFactory2
 import org.osgi.framework.BundleContext
 import org.osgi.framework.Constants
+import org.osgi.framework.ServiceReference
 import org.osgi.util.tracker.ServiceTracker
-import org.slf4j.LoggerFactory
 
 import java.lang.reflect.AnnotatedElement
 
 @Component
 @Service(Injector)
 @Property(name = Constants.SERVICE_RANKING, intValue = 4000)
+@Slf4j("LOG")
 class TranslatorInjector extends AbstractTypedComponentNodeInjector<String> implements Injector,
     InjectAnnotationProcessorFactory2, AcceptsNullName {
-    private static final def LOGGER = LoggerFactory.getLogger(TranslatorInjector)
 
-    private def resourceBundleProviderTracker
+    private ServiceTracker resourceBundleProviderTracker
+    private int trackingCount = -1
+    private final List<ResourceBundleProvider> resourceBundleProviders = []
 
     @Override
     String getName() {
@@ -57,7 +60,7 @@ class TranslatorInjector extends AbstractTypedComponentNodeInjector<String> impl
                 try {
                     value = i18n.get(translatorAnnotation.text(), translatorAnnotation.comment())
                 } catch (final MissingResourceException e) {
-                    LOGGER.error("Could not find translation for text '" + translatorAnnotation.text() + "'.");
+                    LOG.error("Could not find translation for text '" + translatorAnnotation.text() + "'.", e)
                 }
             }
         }
@@ -69,7 +72,7 @@ class TranslatorInjector extends AbstractTypedComponentNodeInjector<String> impl
     private Optional<ResourceBundle> getResourceBundle(Locale locale) {
         def resourceBundle = Optional.absent()
 
-        def resourceBundleProviders = resourceBundleProviderTracker.tracked.values()
+        updateResourceBundleProviders()
         for (def resourceBundleProvider : resourceBundleProviders) {
             if (!resourceBundle.present) {
                 resourceBundle = Optional.fromNullable(resourceBundleProvider.getResourceBundle(locale))
@@ -77,6 +80,45 @@ class TranslatorInjector extends AbstractTypedComponentNodeInjector<String> impl
         }
 
         resourceBundle
+    }
+
+    private void updateResourceBundleProviders() {
+        //if new services have been registered, update our map
+        if (trackingCount < resourceBundleProviderTracker.trackingCount) {
+            synchronized (resourceBundleProviders) {
+                //if our tracking count is still different, perform the update
+                if (trackingCount < resourceBundleProviderTracker.trackingCount) {
+                    def updater = {
+                        resourceBundleProviders.clear()
+
+                        //TODO: Something is wrong with the sorting here, I think it is throwing an exception
+                        //get tracking count that matches the registered services at the time of the update.
+                        def trackingCountForUpdate = resourceBundleProviderTracker.trackingCount
+                        def serviceReferences = resourceBundleProviderTracker.serviceReferences.sort(
+                            false, Collections.reverseOrder()
+                        )
+                        serviceReferences.every { serviceReference ->
+                            def service = resourceBundleProviderTracker.getService((ServiceReference) serviceReference)
+                            if (service) {
+                                resourceBundleProviders.add((ResourceBundleProvider) service)
+                            }
+                        }
+
+                        trackingCountForUpdate
+                    }
+
+                    //keep updating service references if they keep updating in the tracker.
+                    def trackingCountForUpdate = updater()
+                    while (trackingCountForUpdate < resourceBundleProviderTracker.trackingCount) {
+                        LOG.debug("ResourceBundleProvider references changed during update, running update again.")
+                        trackingCountForUpdate = updater()
+                    }
+
+                    //update tracking count to the one used for the update
+                    trackingCount = trackingCountForUpdate
+                }
+            }
+        }
     }
 
     @Override
@@ -107,6 +149,8 @@ class TranslatorInjector extends AbstractTypedComponentNodeInjector<String> impl
     @Activate
     @SuppressWarnings("unchecked")
     protected final void activate(BundleContext bundleContext) {
+        resourceBundleProviders.clear()
+        trackingCount = -1
         resourceBundleProviderTracker = new ServiceTracker(
             bundleContext,
             ResourceBundleProvider.class.getName(),
@@ -124,5 +168,7 @@ class TranslatorInjector extends AbstractTypedComponentNodeInjector<String> impl
             resourceBundleProviderTracker.close()
             resourceBundleProviderTracker = null
         }
+        trackingCount = -1
+        resourceBundleProviders.clear()
     }
 }

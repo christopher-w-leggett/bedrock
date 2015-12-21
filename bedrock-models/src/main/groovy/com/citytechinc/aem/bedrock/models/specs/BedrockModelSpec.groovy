@@ -10,6 +10,7 @@ import com.citytechinc.aem.bedrock.models.impl.LinkInjector
 import com.citytechinc.aem.bedrock.models.impl.ModelListInjector
 import com.citytechinc.aem.bedrock.models.impl.ReferenceInjector
 import com.citytechinc.aem.bedrock.models.impl.TagInjector
+import com.citytechinc.aem.bedrock.models.impl.TranslatorInjector
 import com.citytechinc.aem.bedrock.models.impl.ValueMapFromRequestInjector
 
 import static org.osgi.framework.Constants.SERVICE_RANKING
@@ -31,6 +32,7 @@ abstract class BedrockModelSpec extends BedrockSpec {
 			registerInjectActivateService(new ReferenceInjector(), [(SERVICE_RANKING): 4000])
 			registerInjectActivateService(new ModelListInjector(), [(SERVICE_RANKING): 999])
 			registerInjectActivateService(new ValueMapFromRequestInjector(), [(SERVICE_RANKING): 2500])
+			registerInjectActivateService(new TranslatorInjector(), [(SERVICE_RANKING): 4000])
 			addModelsForPackage(this.class.package.name)
 		}
 	}
