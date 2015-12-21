@@ -2,10 +2,8 @@ package com.citytechinc.aem.bedrock.models.impl
 
 import com.citytechinc.aem.bedrock.api.node.ComponentNode
 import com.citytechinc.aem.bedrock.models.annotations.InheritInject
-
 import groovy.transform.TupleConstructor
 import groovy.util.logging.Slf4j
-
 import org.apache.felix.scr.annotations.Component
 import org.apache.felix.scr.annotations.Property
 import org.apache.felix.scr.annotations.Service
@@ -18,7 +16,6 @@ import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessorFac
 import org.osgi.framework.Constants
 
 import java.lang.reflect.AnnotatedElement
-import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 @Component
@@ -27,44 +24,48 @@ import java.lang.reflect.Type
 @Slf4j("LOG")
 class InheritInjector extends AbstractComponentNodeInjector implements InjectAnnotationProcessorFactory2 {
 
-	@Override
-	String getName() {
-		InheritInject.NAME
-	}
+    @Override
+    String getName() {
+        InheritInject.NAME
+    }
 
-	@Override
-	Object getValue(ComponentNode componentNode, String name, Type declaredType, AnnotatedElement element,
-			DisposalCallbackRegistry callbackRegistry) {
-		def value = null
+    @Override
+    Object getValue(ComponentNode componentNode, String name, Type declaredType, AnnotatedElement element,
+        DisposalCallbackRegistry callbackRegistry) {
+        def value = null
 
-		if (declaredType instanceof Class && declaredType.enum) {
-			def enumString = componentNode.getInherited(name, String)
+        if (element.getAnnotation(InheritInject)) {
+            if (declaredType instanceof Class && declaredType.enum) {
+                def enumString = componentNode.getInherited(name, String)
 
-			value = enumString.present ? declaredType[enumString.get()] : null
-		}
-		try{
-			value = componentNode.getInherited(name, declaredType).orNull()
-		}catch(Exception e){
-			LOG.debug("Error getting object inherited", e)
-		}
-		value
-	}
+                value = enumString.present ? declaredType[enumString.get()] : null
+            }
 
-	@Override
-	InjectAnnotationProcessor2 createAnnotationProcessor(Object adaptable, AnnotatedElement element) {
-		def annotation = element.getAnnotation(InheritInject)
+            try {
+                value = componentNode.getInherited(name, declaredType as Class).orNull()
+            } catch (Exception e) {
+                LOG.debug("Error getting object inherited", e)
+            }
+        }
 
-		annotation ? new InheritAnnotationProcessor(annotation) : null
-	}
+        value
+    }
 
-	@TupleConstructor
-	private static class InheritAnnotationProcessor extends AbstractInjectAnnotationProcessor2 {
+    @Override
+    InjectAnnotationProcessor2 createAnnotationProcessor(Object adaptable, AnnotatedElement element) {
+        def annotation = element.getAnnotation(InheritInject)
 
-		InheritInject annotation
+        annotation ? new InheritAnnotationProcessor(annotation) : null
+    }
 
-		@Override
-		InjectionStrategy getInjectionStrategy() {
-			return annotation.injectionStrategy()
-		}
-	}
+    @TupleConstructor
+    private static class InheritAnnotationProcessor extends AbstractInjectAnnotationProcessor2 {
+
+        InheritInject annotation
+
+        @Override
+        InjectionStrategy getInjectionStrategy() {
+            annotation.injectionStrategy()
+        }
+    }
 }

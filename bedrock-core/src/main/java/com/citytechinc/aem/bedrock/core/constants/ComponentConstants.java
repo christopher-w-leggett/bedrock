@@ -41,7 +41,7 @@ public final class ComponentConstants {
     public static final String PROPERTY_CLASS_NAME = "className";
 
     /**
-     * Edit bar property. Displays the static text value <some text>, e.g. to show "Breadcrumb" in the edit bar for a
+     * Edit bar property. Displays the static text value, e.g. to show "Breadcrumb" in the edit bar for a
      * component, you would use EDIT_BAR_TEXT + "Breadcrumb".
      */
     public static final String EDIT_BAR_TEXT = "text: ";

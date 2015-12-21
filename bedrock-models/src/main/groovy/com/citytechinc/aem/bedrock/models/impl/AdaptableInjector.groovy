@@ -4,6 +4,7 @@ import groovy.util.logging.Slf4j
 import org.apache.felix.scr.annotations.Component
 import org.apache.felix.scr.annotations.Property
 import org.apache.felix.scr.annotations.Service
+import org.apache.sling.models.spi.AcceptsNullName
 import org.apache.sling.models.spi.DisposalCallbackRegistry
 import org.apache.sling.models.spi.Injector
 import org.osgi.framework.Constants
@@ -18,7 +19,7 @@ import java.lang.reflect.Type
 @Service(Injector)
 @Property(name = Constants.SERVICE_RANKING, intValue = Integer.MIN_VALUE)
 @Slf4j("LOG")
-class AdaptableInjector implements Injector, ModelTrait {
+class AdaptableInjector implements Injector, ModelTrait, AcceptsNullName {
 
     @Override
     String getName() {

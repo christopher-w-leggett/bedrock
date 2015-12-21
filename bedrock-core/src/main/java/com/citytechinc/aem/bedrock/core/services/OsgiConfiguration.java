@@ -21,7 +21,7 @@ public final class OsgiConfiguration {
 
     /**
      * Returns the property as a map with string keys and string values.
-     * <p/>
+     * <p>
      * The property is considered as a collection whose entries are of the form key=value.
      *
      * @param propertyName configuration property name
@@ -33,7 +33,7 @@ public final class OsgiConfiguration {
 
     /**
      * Returns the property as a map with string keys and string values.
-     * <p/>
+     * <p>
      * The property is considered as a collection whose entries are of the form key=value.
      *
      * @param propertyName configuration property name
@@ -52,6 +52,7 @@ public final class OsgiConfiguration {
      *
      * @param propertyName configuration property name
      * @param defaultValue default value to return if property value is null
+     * @return double value
      */
     public double getAsDouble(final String propertyName, final double defaultValue) {
         return PropertiesUtil.toDouble(properties.get(propertyName), defaultValue);
@@ -64,6 +65,7 @@ public final class OsgiConfiguration {
      *
      * @param propertyName configuration property name
      * @param defaultValue default value to return if property value is null
+     * @return long value
      */
     public long getAsLong(final String propertyName, final long defaultValue) {
         return PropertiesUtil.toLong(properties.get(propertyName), defaultValue);
@@ -76,6 +78,7 @@ public final class OsgiConfiguration {
      *
      * @param propertyName configuration property name
      * @param defaultValue default value to return if property value is null
+     * @return boolean value
      */
     public boolean getAsBoolean(final String propertyName, final boolean defaultValue) {
         return PropertiesUtil.toBoolean(properties.get(propertyName), defaultValue);
@@ -88,6 +91,7 @@ public final class OsgiConfiguration {
      *
      * @param propertyName configuration property name
      * @param defaultValue default value to return if property value is null
+     * @return integer value
      */
     public int getAsInteger(final String propertyName, final int defaultValue) {
         return PropertiesUtil.toInteger(properties.get(propertyName), defaultValue);
@@ -98,6 +102,7 @@ public final class OsgiConfiguration {
      *
      * @param propertyName configuration property name
      * @param defaultValue default value to return if property value is null
+     * @return string value
      */
     public String getAsString(final String propertyName, final String defaultValue) {
         return PropertiesUtil.toString(properties.get(propertyName), defaultValue);
@@ -110,6 +115,7 @@ public final class OsgiConfiguration {
      * as an array. Otherwise (if the property is <code>null</code>) <code>null</code> is returned.
      *
      * @param propertyName configuration property name
+     * @return list of values
      */
     public List<String> getAsList(final String propertyName) {
         return ImmutableList.copyOf(PropertiesUtil.toStringArray(properties.get(propertyName), new String[0]));
@@ -123,6 +129,7 @@ public final class OsgiConfiguration {
      *
      * @param propertyName configuration property name
      * @param defaultValue default value to return if property is null
+     * @return list of values
      */
     public List<String> getAsList(final String propertyName, final List<String> defaultValue) {
         return ImmutableList.copyOf(PropertiesUtil.toStringArray(properties.get(propertyName), defaultValue.toArray(

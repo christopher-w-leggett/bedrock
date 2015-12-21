@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * Represents a "component" node in the JCR, typically an unstructured node in the hierarchy of a CQ page.
- * <p/>
+ * <p>
  * Many methods return an <a href="https://code.google.com/p/guava-libraries/wiki/UsingAndAvoidingNullExplained#Optional">Optional</a>
  * type where a null instance would otherwise be returned.
  */

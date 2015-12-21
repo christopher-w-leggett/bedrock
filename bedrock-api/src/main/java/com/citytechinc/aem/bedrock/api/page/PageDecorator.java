@@ -155,7 +155,7 @@ public interface PageDecorator extends Page, Accessible, Inheritable, Linkable, 
 
     /**
      * Returns the absolute parent page. If no page exists at that level, <code>null</code> is returned.
-     * <p/>
+     * <p>
      * Example (this path == /content/geometrixx/en/products)
      * <pre>
      * | level | returned                        |
@@ -190,7 +190,7 @@ public interface PageDecorator extends Page, Accessible, Inheritable, Linkable, 
 
     /**
      * Returns the relative parent page. If no page exists at that level, <code>null</code> is returned.
-     * <p/>
+     * <p>
      * Example (this path == /content/geometrixx/en/products)
      * <pre>
      * | level | returned                        |
