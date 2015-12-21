@@ -47,20 +47,22 @@ class TranslatorInjector extends AbstractTypedComponentNodeInjector<String> impl
                     AnnotatedElement element, DisposalCallbackRegistry callbackRegistry) {
         def translatorAnnotation = element.getAnnotation(TranslatorInject)
 
-        def locale = translatorAnnotation.localeResolver().newInstance().resolve(
-            componentNode.resource, componentNode.resource.resourceResolver
-        )
-
         def value = null
 
-        if (locale.present) {
-            def resourceBundle = getResourceBundle(locale.get())
-            if (resourceBundle.present) {
-                def i18n = new I18n(resourceBundle.get())
-                try {
-                    value = i18n.get(translatorAnnotation.text(), translatorAnnotation.comment())
-                } catch (final MissingResourceException e) {
-                    LOG.error("Could not find translation for text '" + translatorAnnotation.text() + "'.", e)
+        if (translatorAnnotation) {
+            def locale = translatorAnnotation.localeResolver().newInstance().resolve(
+                componentNode.resource, componentNode.resource.resourceResolver
+            )
+
+            if (locale.present) {
+                def resourceBundle = getResourceBundle(locale.get())
+                if (resourceBundle.present) {
+                    def i18n = new I18n(resourceBundle.get())
+                    try {
+                        value = i18n.get(translatorAnnotation.text(), translatorAnnotation.comment())
+                    } catch (final MissingResourceException e) {
+                        LOG.error("Could not find translation for text '" + translatorAnnotation.text() + "'.", e)
+                    }
                 }
             }
         }
@@ -91,7 +93,6 @@ class TranslatorInjector extends AbstractTypedComponentNodeInjector<String> impl
                     def updater = {
                         resourceBundleProviders.clear()
 
-                        //TODO: Something is wrong with the sorting here, I think it is throwing an exception
                         //get tracking count that matches the registered services at the time of the update.
                         def trackingCountForUpdate = resourceBundleProviderTracker.trackingCount
                         def serviceReferences = resourceBundleProviderTracker.serviceReferences.sort(
