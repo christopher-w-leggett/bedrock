@@ -481,7 +481,7 @@
             <dependency>
                 <groupId>com.citytechinc.aem.prosper</groupId>
                 <artifactId>prosper</artifactId>
-                <version>5.0.0</version>
+                <version>5.1.0</version>
             </dependency>
             <dependency>
                 <groupId>net.sourceforge.cobertura</groupId>
