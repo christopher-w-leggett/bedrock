@@ -4,11 +4,16 @@ import com.citytechinc.aem.bedrock.api.node.ComponentNode
 import com.citytechinc.aem.bedrock.models.annotations.TagInject
 import com.day.cq.tagging.Tag
 import com.day.cq.tagging.TagManager
+
 import groovy.transform.TupleConstructor
 import groovy.util.logging.Slf4j
+
 import org.apache.felix.scr.annotations.Component
 import org.apache.felix.scr.annotations.Property
+import org.apache.felix.scr.annotations.Reference
 import org.apache.felix.scr.annotations.Service
+import org.apache.sling.api.resource.ResourceResolver
+import org.apache.sling.api.resource.ResourceResolverFactory
 import org.apache.sling.models.annotations.injectorspecific.InjectionStrategy
 import org.apache.sling.models.spi.AcceptsNullName
 import org.apache.sling.models.spi.DisposalCallbackRegistry
@@ -26,52 +31,61 @@ import java.lang.reflect.Type
 @Property(name = Constants.SERVICE_RANKING, intValue = 800)
 @Slf4j("LOG")
 class TagInjector extends AbstractComponentNodeInjector implements InjectAnnotationProcessorFactory2, AcceptsNullName,
-    ModelTrait {
+ModelTrait {
 
-    @Override
-    Object getValue(ComponentNode componentNode, String name, Type declaredType, AnnotatedElement element,
-        DisposalCallbackRegistry callbackRegistry) {
-        def annotation = element.getAnnotation(TagInject)
-        def declaredClass = getDeclaredClassForDeclaredType(declaredType)
+	@Reference
+	ResourceResolverFactory resourceResolverFactory
 
-        if (declaredClass == Tag) {
-            def tagManager = componentNode.resource.resourceResolver.adaptTo(TagManager)
-            def tagStrings = annotation && annotation.inherit() ? componentNode.getAsListInherited(name,
-                String) : componentNode.getAsList(name, String)
-            def tags = tagStrings.collect { tagManager.resolve(it) }
+	@Override
+	Object getValue(ComponentNode componentNode, String name, Type declaredType, AnnotatedElement element,
+			DisposalCallbackRegistry callbackRegistry) {
+		def annotation = element.getAnnotation(TagInject)
+		def declaredClass = getDeclaredClassForDeclaredType(declaredType)
 
-            if (tags) {
-                if (!isDeclaredTypeCollection(declaredType)) {
-                    return tags[0]
-                }
+		ResourceResolver adminResourceResolver = resourceResolverFactory.getAdministrativeResourceResolver(null)
 
-                return tags
-            }
-        }
+		try{
+			if (declaredClass == Tag) {
+				def tagManager = adminResourceResolver.adaptTo(TagManager)
+				def tagStrings = annotation && annotation.inherit() ? componentNode.getAsListInherited(name,
+						String) : componentNode.getAsList(name, String)
+				def tags = tagStrings.collect { tagManager.resolve(it) }
 
-        null
-    }
+				if (tags) {
+					if (!isDeclaredTypeCollection(declaredType)) {
+						return tags[0]
+					}
 
-    @Override
-    InjectAnnotationProcessor2 createAnnotationProcessor(Object adaptable, AnnotatedElement element) {
-        def annotation = element.getAnnotation(TagInject)
+					return tags
+				}
+			}
 
-        annotation ? new TagAnnotationProcessor(annotation) : null
-    }
+			return null
+		}finally{
+			adminResourceResolver.close()
+		}
+	}
 
-    @Override
-    String getName() {
-        TagInject.NAME
-    }
+	@Override
+	InjectAnnotationProcessor2 createAnnotationProcessor(Object adaptable, AnnotatedElement element) {
+		def annotation = element.getAnnotation(TagInject)
 
-    @TupleConstructor
-    private static class TagAnnotationProcessor extends AbstractInjectAnnotationProcessor2 {
+		annotation ? new TagAnnotationProcessor(annotation) : null
+	}
 
-        TagInject annotation
+	@Override
+	String getName() {
+		TagInject.NAME
+	}
 
-        @Override
-        InjectionStrategy getInjectionStrategy() {
-            annotation.injectionStrategy()
-        }
-    }
+	@TupleConstructor
+	private static class TagAnnotationProcessor extends AbstractInjectAnnotationProcessor2 {
+
+		TagInject annotation
+
+		@Override
+		InjectionStrategy getInjectionStrategy() {
+			annotation.injectionStrategy()
+		}
+	}
 }
