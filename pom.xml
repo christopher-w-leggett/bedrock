@@ -10,7 +10,7 @@
     <groupId>com.citytechinc.aem.bedrock</groupId>
     <artifactId>bedrock</artifactId>
     <packaging>pom</packaging>
-    <version>4.0.4</version>
+    <version>4.0.5-SNAPSHOT</version>
     <name>Bedrock</name>
     <description>Bedrock provides a sturdy foundation for bootstrapping and simplifying AEM (Adobe CQ) projects.
     </description>
