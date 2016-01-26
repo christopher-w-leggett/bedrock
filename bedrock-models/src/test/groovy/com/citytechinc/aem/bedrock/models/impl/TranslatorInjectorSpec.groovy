@@ -67,7 +67,7 @@ class TranslatorInjectorSpec extends BedrockModelSpec {
         //Because of this  we can't successfully test the service reference ordering through this spec.
         //For now, just setting custom resolver to max value to satisfy test.
         slingContext.with {
-            registerService(LocaleResolver, new CustomLocalResolver(), ["resolver.name": "custom", (SERVICE_RANKING): Integer.MAX_VALUE])
+            registerService(LocaleResolver, new CustomLocaleResolver(), ["resolver.name": "custom", (SERVICE_RANKING): Integer.MAX_VALUE])
             registerService(ResourceBundleProvider, new MockResourceBundleProvider("/apps/citytechinc/i18n", resourceResolver), [:])
         }
     }
@@ -84,7 +84,7 @@ class TranslatorInjectorSpec extends BedrockModelSpec {
         model.someTextWithCustomResolverTranslation == "some text with custom resolver"
     }
 
-    public static class CustomLocalResolver implements LocaleResolver {
+    public static class CustomLocaleResolver implements LocaleResolver {
 
         @Override
         Optional<Locale> resolve(final Resource resource, final ResourceResolver resourceResolver) {

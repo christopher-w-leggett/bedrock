@@ -123,7 +123,7 @@ class TranslatorInjector extends AbstractTypedComponentNodeInjector<String> impl
     @Modified
     protected final void activate(BundleContext bundleContext) {
         this.bundleContext = bundleContext
-        //TODO: Something strange is happening where localeResolverTracker must be instantiated and opened before resourceBundleProviderTracker.
+        //For some reason localeResolverTracker needs to be opened first for unit tests to work.
         localeResolverTracker = new Tracker<>(LocaleResolver, bundleContext)
         localeResolverTracker.open()
         resourceBundleProviderTracker = new Tracker<>(ResourceBundleProvider, bundleContext)
