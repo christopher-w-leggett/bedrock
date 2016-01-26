@@ -1,8 +1,8 @@
 package com.citytechinc.aem.bedrock.models.i18n.impl
 
 import com.citytechinc.aem.bedrock.models.i18n.LocaleResolver
-import com.day.cq.wcm.api.Page
 import com.day.cq.wcm.api.PageManager
+import com.google.common.base.Function
 import com.google.common.base.Optional
 import org.apache.felix.scr.annotations.Component
 import org.apache.felix.scr.annotations.Service
@@ -14,7 +14,7 @@ import org.apache.sling.api.resource.ResourceResolver
  */
 @Component
 @Service(LocaleResolver)
-class DefaultLocaleResolver implements LocaleResolver {
+public final class DefaultLocaleResolver implements LocaleResolver {
     /**
      * Uses the resource resolver provided to find the containing page for the resource and finds the locale
      * for the page.
@@ -24,18 +24,8 @@ class DefaultLocaleResolver implements LocaleResolver {
      * @return The locale or Optional.absent() if one could not be found.
      */
     @Override
-    Optional<Locale> resolve(final Resource resource, final ResourceResolver resourceResolver) {
-        final Optional<Locale> locale
-
-        final Optional<Page> resourcePage = Optional.fromNullable(
-            resourceResolver.adaptTo(PageManager.class).getContainingPage(resource)
-        )
-        if (resourcePage.present) {
-            locale = Optional.of(resourcePage.get().getLanguage(false))
-        } else {
-            locale = Optional.absent()
-        }
-
-        locale
+    public Optional<Locale> resolve(final Resource resource, final ResourceResolver resourceResolver) {
+        Optional.fromNullable(resourceResolver.adaptTo(PageManager.class).getContainingPage(resource))
+            .transform((Function) { resourcePage -> resourcePage.getLanguage(false) })
     }
 }

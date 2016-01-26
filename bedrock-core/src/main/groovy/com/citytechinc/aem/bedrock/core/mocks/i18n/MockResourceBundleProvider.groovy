@@ -7,7 +7,7 @@ import org.apache.sling.i18n.ResourceBundleProvider
  * A mock <code>ResourceBundleProvider</code> implementation that will return <code>MockResourceBundle</code>
  * implementations configured to work with the provided translator dictionary located under the resource bundle path.
  */
-public class MockResourceBundleProvider implements ResourceBundleProvider {
+public final class MockResourceBundleProvider implements ResourceBundleProvider {
     private final String resourceBundlePath
     private final ResourceResolver resourceResolver
 

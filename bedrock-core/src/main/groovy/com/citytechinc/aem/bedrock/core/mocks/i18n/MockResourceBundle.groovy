@@ -2,13 +2,12 @@ package com.citytechinc.aem.bedrock.core.mocks.i18n
 
 import org.apache.sling.api.resource.Resource
 import org.apache.sling.api.resource.ResourceResolver
-import org.apache.sling.api.resource.ValueMap
 import org.apache.sling.i18n.impl.ResourceBundleEnumeration
 
 /**
  * A mock <code>ResourceBundle</code> implementation.
  */
-public class MockResourceBundle extends ResourceBundle {
+public final class MockResourceBundle extends ResourceBundle {
     private static final Locale DEFAULT_LOCALE = Locale.ENGLISH
     private static final String PROP_KEY = "sling:key";
     private static final String PROP_MESSAGE = "sling:message";
@@ -50,17 +49,15 @@ public class MockResourceBundle extends ResourceBundle {
 
     private static Map<String, Object> getResources(final Locale locale, final String resourceBundlePath,
                                                     final ResourceResolver resourceResolver) {
-        final Map<String, Object> resources = [:]
+        final def resources = [:]
 
-        final Resource languageRoot = getLanguageRoot(locale, resourceBundlePath, resourceResolver)
-        if (languageRoot != null) {
-            final Iterator<Resource> entries = languageRoot.listChildren()
-            while (entries.hasNext()) {
-                final Resource entry = entries.next()
-                final ValueMap entryProperties = entry.getValueMap()
-                final String key = entryProperties.get(PROP_KEY, entry.getName())
-                final String message = entryProperties.get(PROP_MESSAGE, String.class)
-                resources.put(key, message)
+        final def languageRoot = getLanguageRoot(locale, resourceBundlePath, resourceResolver)
+        if (languageRoot) {
+            languageRoot.listChildren().each { resource ->
+                resources.put(
+                    resource.valueMap.get(PROP_KEY, resource.getName()),
+                    resource.valueMap.get(PROP_MESSAGE, String.class)
+                );
             }
         }
 
@@ -69,16 +66,16 @@ public class MockResourceBundle extends ResourceBundle {
 
     private static Resource getLanguageRoot(final Locale locale, final String resourceBundlePath,
                                             final ResourceResolver resourceResolver) {
-        final Resource languageRoot;
+        final def languageRoot
 
-        final Resource currentLanguageRoot = resourceResolver.getResource(resourceBundlePath + '/' + locale.toString())
+        final def currentLanguageRoot = resourceResolver.getResource(resourceBundlePath + '/' + locale.toString())
         if (currentLanguageRoot != null) {
             languageRoot = currentLanguageRoot
         } else {
-            if (!locale.getVariant().isEmpty()) {
+            if (locale.getVariant()) {
                 languageRoot = getLanguageRoot(new Locale(locale.getLanguage(), locale.getCountry()),
                     resourceBundlePath, resourceResolver)
-            } else if (!locale.getCountry().isEmpty()) {
+            } else if (locale.getCountry()) {
                 languageRoot = getLanguageRoot(new Locale(locale.getLanguage()), resourceBundlePath, resourceResolver)
             } else if (!DEFAULT_LOCALE.getLanguage().equals(locale.getLanguage())) {
                 languageRoot = getLanguageRoot(DEFAULT_LOCALE, resourceBundlePath, resourceResolver)
