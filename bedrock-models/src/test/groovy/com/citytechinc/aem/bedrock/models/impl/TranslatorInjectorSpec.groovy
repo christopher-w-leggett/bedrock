@@ -10,6 +10,8 @@ import org.apache.sling.api.resource.ResourceResolver
 import org.apache.sling.i18n.ResourceBundleProvider
 import org.apache.sling.models.annotations.Model
 
+import static org.osgi.framework.Constants.SERVICE_RANKING
+
 class TranslatorInjectorSpec extends BedrockModelSpec {
 
     @Model(adaptables = Resource)
@@ -21,7 +23,7 @@ class TranslatorInjectorSpec extends BedrockModelSpec {
         @TranslatorInject(text = "some text", comment = "with comment")
         String someTextWithCommentTranslation
 
-        @TranslatorInject(text = "some text", localeResolver = CustomLocalResolver)
+        @TranslatorInject(text = "some text", localeResolverFilter = "(resolver.name=custom)")
         String someTextWithCustomResolverTranslation
     }
 
@@ -60,8 +62,13 @@ class TranslatorInjectorSpec extends BedrockModelSpec {
             }
         }
 
+        //NOTE: TranslatorInjector uses ServiceReference natural ordering to determine correct services to use.
+        //There is a defect in the MockServiceReference of the sling testing library that does not perform correct ordering.
+        //Because of this  we can't successfully test the service reference ordering through this spec.
+        //For now, just setting custom resolver to max value to satisfy test.
         slingContext.with {
-            registerService(ResourceBundleProvider, new MockResourceBundleProvider("/apps/citytechinc/i18n", resourceResolver))
+            registerService(LocaleResolver, new CustomLocalResolver(), ["resolver.name": "custom", (SERVICE_RANKING): Integer.MAX_VALUE])
+            registerService(ResourceBundleProvider, new MockResourceBundleProvider("/apps/citytechinc/i18n", resourceResolver), [:])
         }
     }
 
@@ -77,7 +84,7 @@ class TranslatorInjectorSpec extends BedrockModelSpec {
         model.someTextWithCustomResolverTranslation == "some text with custom resolver"
     }
 
-    static class CustomLocalResolver implements LocaleResolver {
+    public static class CustomLocalResolver implements LocaleResolver {
 
         @Override
         Optional<Locale> resolve(final Resource resource, final ResourceResolver resourceResolver) {

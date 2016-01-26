@@ -1,6 +1,7 @@
 package com.citytechinc.aem.bedrock.models.specs
 
 import com.citytechinc.aem.bedrock.core.specs.BedrockSpec
+import com.citytechinc.aem.bedrock.models.i18n.impl.DefaultLocaleResolver
 import com.citytechinc.aem.bedrock.models.impl.AdaptableInjector
 import com.citytechinc.aem.bedrock.models.impl.ComponentInjector
 import com.citytechinc.aem.bedrock.models.impl.EnumInjector
@@ -32,6 +33,7 @@ abstract class BedrockModelSpec extends BedrockSpec {
             registerInjectActivateService(new ReferenceInjector(), [(SERVICE_RANKING): 4000])
             registerInjectActivateService(new ModelListInjector(), [(SERVICE_RANKING): 999])
             registerInjectActivateService(new ValueMapFromRequestInjector(), [(SERVICE_RANKING): 2500])
+            registerInjectActivateService(new DefaultLocaleResolver(), [(SERVICE_RANKING): 4000])
             registerInjectActivateService(new TranslatorInjector(), [(SERVICE_RANKING): 4000])
             addModelsForPackage(this.class.package.name)
         }

@@ -1,7 +1,5 @@
 package com.citytechinc.aem.bedrock.models.annotations;
 
-import com.citytechinc.aem.bedrock.models.i18n.LocaleResolver;
-import com.citytechinc.aem.bedrock.models.i18n.impl.DefaultLocaleResolver;
 import org.apache.sling.models.annotations.Source;
 import org.apache.sling.models.annotations.injectorspecific.InjectionStrategy;
 import org.apache.sling.models.spi.injectorspecific.InjectAnnotation;
@@ -50,8 +48,9 @@ public @interface TranslatorInject {
     String comment() default "";
 
     /**
-     * The locale resolver to use when resolving the locale.
+     * The filter for selecting a locale resolver to use when resolving the locale.  If no value is provided,
+     * standard OSGi service ranking is used to pick a locale resolver.
      */
-    Class<? extends LocaleResolver> localeResolver() default DefaultLocaleResolver.class;
+    String localeResolverFilter() default "";
 
 }

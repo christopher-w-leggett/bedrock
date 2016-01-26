@@ -2,13 +2,16 @@ package com.citytechinc.aem.bedrock.models.impl
 
 import com.citytechinc.aem.bedrock.api.node.ComponentNode
 import com.citytechinc.aem.bedrock.models.annotations.TranslatorInject
+import com.citytechinc.aem.bedrock.models.i18n.LocaleResolver
 import com.day.cq.i18n.I18n
 import com.google.common.base.Optional
+import com.google.common.base.Strings
 import groovy.transform.TupleConstructor
 import groovy.util.logging.Slf4j
 import org.apache.felix.scr.annotations.Activate
 import org.apache.felix.scr.annotations.Component
 import org.apache.felix.scr.annotations.Deactivate
+import org.apache.felix.scr.annotations.Modified
 import org.apache.felix.scr.annotations.Property
 import org.apache.felix.scr.annotations.Service
 import org.apache.sling.i18n.ResourceBundleProvider
@@ -21,6 +24,7 @@ import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessor2
 import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessorFactory2
 import org.osgi.framework.BundleContext
 import org.osgi.framework.Constants
+import org.osgi.framework.Filter
 import org.osgi.framework.ServiceReference
 import org.osgi.util.tracker.ServiceTracker
 
@@ -33,9 +37,9 @@ import java.lang.reflect.AnnotatedElement
 class TranslatorInjector extends AbstractTypedComponentNodeInjector<String> implements Injector,
     InjectAnnotationProcessorFactory2, AcceptsNullName {
 
-    private ServiceTracker resourceBundleProviderTracker
-    private int trackingCount = -1
-    private final List<ResourceBundleProvider> resourceBundleProviders = []
+    private BundleContext bundleContext
+    private Tracker<ResourceBundleProvider> resourceBundleProviderTracker
+    private Tracker<LocaleResolver> localeResolverTracker
 
     @Override
     String getName() {
@@ -50,7 +54,14 @@ class TranslatorInjector extends AbstractTypedComponentNodeInjector<String> impl
         def value = null
 
         if (translatorAnnotation) {
-            def locale = translatorAnnotation.localeResolver().newInstance().resolve(
+            Optional<Filter> filter = Optional.absent()
+            if (!Strings.isNullOrEmpty(translatorAnnotation.localeResolverFilter())) {
+                filter = Optional.of(bundleContext.createFilter(translatorAnnotation.localeResolverFilter()))
+            }
+
+            def locale = localeResolverTracker.getService { ServiceReference serviceReference ->
+                !filter.isPresent() || filter.get().match(serviceReference)
+            }.get().resolve(
                 componentNode.resource, componentNode.resource.resourceResolver
             )
 
@@ -74,52 +85,13 @@ class TranslatorInjector extends AbstractTypedComponentNodeInjector<String> impl
     private Optional<ResourceBundle> getResourceBundle(Locale locale) {
         def resourceBundle = Optional.absent()
 
-        updateResourceBundleProviders()
-        for (def resourceBundleProvider : resourceBundleProviders) {
+        for (def resourceBundleProvider : resourceBundleProviderTracker.services) {
             if (!resourceBundle.present) {
                 resourceBundle = Optional.fromNullable(resourceBundleProvider.getResourceBundle(locale))
             }
         }
 
         resourceBundle
-    }
-
-    private void updateResourceBundleProviders() {
-        //if new services have been registered, update our map
-        if (trackingCount < resourceBundleProviderTracker.trackingCount) {
-            synchronized (resourceBundleProviders) {
-                //if our tracking count is still different, perform the update
-                if (trackingCount < resourceBundleProviderTracker.trackingCount) {
-                    def updater = {
-                        resourceBundleProviders.clear()
-
-                        //get tracking count that matches the registered services at the time of the update.
-                        def trackingCountForUpdate = resourceBundleProviderTracker.trackingCount
-                        def serviceReferences = resourceBundleProviderTracker.serviceReferences.sort(
-                            false, Collections.reverseOrder()
-                        )
-                        serviceReferences.every { serviceReference ->
-                            def service = resourceBundleProviderTracker.getService((ServiceReference) serviceReference)
-                            if (service) {
-                                resourceBundleProviders.add((ResourceBundleProvider) service)
-                            }
-                        }
-
-                        trackingCountForUpdate
-                    }
-
-                    //keep updating service references if they keep updating in the tracker.
-                    def trackingCountForUpdate = updater()
-                    while (trackingCountForUpdate < resourceBundleProviderTracker.trackingCount) {
-                        LOG.debug("ResourceBundleProvider references changed during update, running update again.")
-                        trackingCountForUpdate = updater()
-                    }
-
-                    //update tracking count to the one used for the update
-                    trackingCount = trackingCountForUpdate
-                }
-            }
-        }
     }
 
     @Override
@@ -148,15 +120,13 @@ class TranslatorInjector extends AbstractTypedComponentNodeInjector<String> impl
      * @param bundleContext The {@code BundleContext}.
      */
     @Activate
-    @SuppressWarnings("unchecked")
+    @Modified
     protected final void activate(BundleContext bundleContext) {
-        resourceBundleProviders.clear()
-        trackingCount = -1
-        resourceBundleProviderTracker = new ServiceTracker(
-            bundleContext,
-            ResourceBundleProvider.class.getName(),
-            null
-        )
+        this.bundleContext = bundleContext
+        //TODO: Something strange is happening where localeResolverTracker must be instantiated and opened before resourceBundleProviderTracker.
+        localeResolverTracker = new Tracker<>(LocaleResolver, bundleContext)
+        localeResolverTracker.open()
+        resourceBundleProviderTracker = new Tracker<>(ResourceBundleProvider, bundleContext)
         resourceBundleProviderTracker.open()
     }
 
@@ -165,11 +135,89 @@ class TranslatorInjector extends AbstractTypedComponentNodeInjector<String> impl
      */
     @Deactivate
     protected final void deactivate() {
-        if (resourceBundleProviderTracker != null) {
+        bundleContext = null
+        if (resourceBundleProviderTracker) {
             resourceBundleProviderTracker.close()
             resourceBundleProviderTracker = null
         }
-        trackingCount = -1
-        resourceBundleProviders.clear()
+        if (localeResolverTracker) {
+            localeResolverTracker.close()
+            localeResolverTracker = null
+        }
+    }
+
+    private static final class Tracker<T> {
+        private final ServiceTracker serviceTracker
+        private int trackingCount = -1
+        private final List<T> trackedServices = []
+
+        private Tracker(Class<T> clazz, BundleContext bundleContext) {
+            serviceTracker = new ServiceTracker(bundleContext, clazz.name, null)
+        }
+
+        public List<T> getServices() {
+            updateServices()
+            trackedServices
+        }
+
+        public Optional<T> getService(Closure<Boolean> closure) {
+            def service = Optional.absent()
+
+            def serviceReferences = serviceTracker.serviceReferences.sort(
+                false, Collections.reverseOrder()
+            )
+            def serviceReference = serviceReferences.find(closure)
+            if (serviceReference) {
+                service = Optional.fromNullable(serviceTracker.getService(serviceReference))
+            }
+
+            service
+        }
+
+        public void open() {
+            serviceTracker.open(true)
+        }
+
+        public void close() {
+            serviceTracker.close()
+        }
+
+        private void updateServices() {
+            //if new services have been registered, update tracked services
+            if (trackingCount < serviceTracker.trackingCount) {
+                synchronized (trackedServices) {
+                    //if our tracking count is still different, perform the update
+                    if (trackingCount < serviceTracker.trackingCount) {
+                        def updater = {
+                            trackedServices.clear()
+
+                            //get tracking count that matches the registered services at the time of the update.
+                            def trackingCountForUpdate = serviceTracker.trackingCount
+                            def serviceReferences = serviceTracker.serviceReferences.sort(
+                                false, Collections.reverseOrder()
+                            )
+                            serviceReferences.every { serviceReference ->
+                                def service = serviceTracker.getService((ServiceReference) serviceReference)
+                                if (service) {
+                                    trackedServices.add((T) service)
+                                }
+                            }
+
+                            trackingCountForUpdate
+                        }
+
+                        //keep updating service references if they keep updating in the tracker.
+                        def trackingCountForUpdate = updater()
+                        while (trackingCountForUpdate < serviceTracker.trackingCount) {
+                            LOG.debug("Service references changed during update, running update again.")
+                            trackingCountForUpdate = updater()
+                        }
+
+                        //update tracking count to the one used for the update
+                        trackingCount = trackingCountForUpdate
+                    }
+                }
+            }
+        }
     }
 }
