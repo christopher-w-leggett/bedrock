@@ -15,7 +15,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Allows for the injection of translated content.
  * <p/>
- * This injector will create a new instance on the specified {@code LocaleResolver} and provide it the current
+ * This injector will get an appropriate {@code LocaleResolver} service and provide it the current
  * resource and resource resolver for identifying the {@code Locale}.  The {@code Locale} will then be used to identify
  * a {@code ResourceBundle} for retrieving the translated content.
  */
@@ -38,7 +38,7 @@ public @interface TranslatorInject {
     InjectionStrategy injectionStrategy() default InjectionStrategy.DEFAULT;
 
     /**
-     * The text to translate..
+     * The text to translate.
      */
     String text();
 
