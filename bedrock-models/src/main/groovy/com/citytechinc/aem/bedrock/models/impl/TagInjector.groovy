@@ -26,52 +26,52 @@ import java.lang.reflect.Type
 @Property(name = Constants.SERVICE_RANKING, intValue = 800)
 @Slf4j("LOG")
 class TagInjector extends AbstractComponentNodeInjector implements InjectAnnotationProcessorFactory2, AcceptsNullName,
-    ModelTrait {
+ModelTrait {
 
-    @Override
-    Object getValue(ComponentNode componentNode, String name, Type declaredType, AnnotatedElement element,
-        DisposalCallbackRegistry callbackRegistry) {
-        def annotation = element.getAnnotation(TagInject)
-        def declaredClass = getDeclaredClassForDeclaredType(declaredType)
+	@Override
+	Object getValue(ComponentNode componentNode, String name, Type declaredType, AnnotatedElement element,
+			DisposalCallbackRegistry callbackRegistry) {
+		def annotation = element.getAnnotation(TagInject)
+		def declaredClass = getDeclaredClassForDeclaredType(declaredType)
 
-        if (declaredClass == Tag) {
-            def tagManager = componentNode.resource.resourceResolver.adaptTo(TagManager)
-            def tagStrings = annotation && annotation.inherit() ? componentNode.getAsListInherited(name,
-                String) : componentNode.getAsList(name, String)
-            def tags = tagStrings.collect { tagManager.resolve(it) }
+		if (declaredClass == Tag) {
+			def tagManager = componentNode.resource.resourceResolver.adaptTo(TagManager)
+			def tagStrings = annotation && annotation.inherit() ? componentNode.getAsListInherited(name,
+					String) : componentNode.getAsList(name, String)
+			def tags = tagStrings.collect { tagManager.resolve(it) }
 
-            if (tags) {
-                if (!isDeclaredTypeCollection(declaredType)) {
-                    return tags[0]
-                }
+			if (tags) {
+				if (!isDeclaredTypeCollection(declaredType)) {
+					return tags[0]
+				}
 
-                return tags
-            }
-        }
+				return tags
+			}
+		}
 
-        null
-    }
+		null
+	}
 
-    @Override
-    InjectAnnotationProcessor2 createAnnotationProcessor(Object adaptable, AnnotatedElement element) {
-        def annotation = element.getAnnotation(TagInject)
+	@Override
+	InjectAnnotationProcessor2 createAnnotationProcessor(Object adaptable, AnnotatedElement element) {
+		def annotation = element.getAnnotation(TagInject)
 
-        annotation ? new TagAnnotationProcessor(annotation) : null
-    }
+		annotation ? new TagAnnotationProcessor(annotation) : null
+	}
 
-    @Override
-    String getName() {
-        TagInject.NAME
-    }
+	@Override
+	String getName() {
+		TagInject.NAME
+	}
 
-    @TupleConstructor
-    private static class TagAnnotationProcessor extends AbstractInjectAnnotationProcessor2 {
+	@TupleConstructor
+	private static class TagAnnotationProcessor extends AbstractInjectAnnotationProcessor2 {
 
-        TagInject annotation
+		TagInject annotation
 
-        @Override
-        InjectionStrategy getInjectionStrategy() {
-            annotation.injectionStrategy()
-        }
-    }
+		@Override
+		InjectionStrategy getInjectionStrategy() {
+			annotation.injectionStrategy()
+		}
+	}
 }
