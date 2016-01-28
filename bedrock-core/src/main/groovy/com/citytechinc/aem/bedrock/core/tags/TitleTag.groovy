@@ -45,7 +45,7 @@ final class TitleTag extends AbstractMetaTag {
         try {
             pageContext.out.write(builder.toString())
         } catch (IOException e) {
-            LOG.error "error writing title tag", e
+            LOG.error("error writing title tag", e)
 
             throw new JspTagException(e)
         }

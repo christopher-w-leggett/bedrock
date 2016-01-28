@@ -44,7 +44,7 @@ final class ImageSourceTag extends AbstractComponentTag {
         try {
             pageContext.out.write(imageSource.or(defaultValue))
         } catch (IOException e) {
-            LOG.error "error writing image source = $imageSource", e
+            LOG.error("error writing image source = $imageSource", e)
 
             throw new JspTagException(e)
         }

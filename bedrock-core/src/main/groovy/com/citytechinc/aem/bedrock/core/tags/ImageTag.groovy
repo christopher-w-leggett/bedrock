@@ -43,7 +43,7 @@ final class ImageTag extends AbstractComponentTag {
             try {
                 image.draw(pageContext.out)
             } catch (IOException e) {
-                LOG.error "error writing image tag for name = $name", e
+                LOG.error("error writing image tag for name = $name", e)
 
                 throw new JspTagException(e)
             }
