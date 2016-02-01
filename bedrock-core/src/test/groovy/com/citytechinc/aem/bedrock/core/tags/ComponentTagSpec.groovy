@@ -2,13 +2,13 @@ package com.citytechinc.aem.bedrock.core.tags
 
 import com.citytechinc.aem.bedrock.core.components.TestComponent
 import com.citytechinc.aem.bedrock.core.specs.BedrockSpec
-import com.citytechinc.aem.bedrock.core.traits.BedrockJspTagTrait
+import com.citytechinc.aem.prosper.traits.JspTagTrait
 import spock.lang.Unroll
 
 import javax.servlet.jsp.PageContext
 
 @Unroll
-class ComponentTagSpec extends BedrockSpec implements BedrockJspTagTrait {
+class ComponentTagSpec extends BedrockSpec implements JspTagTrait {
 
     def setupSpec() {
         pageBuilder.content {

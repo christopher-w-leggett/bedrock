@@ -1,13 +1,13 @@
 package com.citytechinc.aem.bedrock.core.tags
 
-import com.citytechinc.aem.bedrock.core.traits.BedrockJspTagTrait
 import com.citytechinc.aem.prosper.tag.JspTagProxy
+import com.citytechinc.aem.prosper.traits.JspTagTrait
 
 import javax.servlet.jsp.tagext.TagSupport
 
 import static com.day.cq.wcm.tags.DefineObjectsTag.DEFAULT_XSSAPI_NAME
 
-trait BedrockJspMetaTagTrait extends BedrockJspTagTrait {
+trait JspMetaTagTrait extends JspTagTrait {
 
     @Override
     JspTagProxy init(Class<TagSupport> tagClass, String path) {

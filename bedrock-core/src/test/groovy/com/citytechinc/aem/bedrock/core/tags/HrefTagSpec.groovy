@@ -1,11 +1,11 @@
 package com.citytechinc.aem.bedrock.core.tags
 
 import com.citytechinc.aem.bedrock.core.specs.BedrockSpec
-import com.citytechinc.aem.bedrock.core.traits.BedrockJspTagTrait
+import com.citytechinc.aem.prosper.traits.JspTagTrait
 import spock.lang.Unroll
 
 @Unroll
-class HrefTagSpec extends BedrockSpec implements BedrockJspTagTrait {
+class HrefTagSpec extends BedrockSpec implements JspTagTrait {
 
     def setupSpec() {
         pageBuilder.content {
@@ -20,7 +20,7 @@ class HrefTagSpec extends BedrockSpec implements BedrockJspTagTrait {
         setup:
         def proxy = init(HrefTag, "/content/citytechinc/jcr:content")
 
-        proxy.tag.propertyName = "path"
+        (proxy.tag as HrefTag).propertyName = "path"
 
         when:
         proxy.tag.doEndTag()

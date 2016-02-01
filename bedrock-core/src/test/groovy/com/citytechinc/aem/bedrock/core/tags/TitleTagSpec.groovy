@@ -4,7 +4,7 @@ import com.citytechinc.aem.bedrock.core.specs.BedrockSpec
 import spock.lang.Unroll
 
 @Unroll
-class TitleTagSpec extends BedrockSpec implements BedrockJspMetaTagTrait {
+class TitleTagSpec extends BedrockSpec implements JspMetaTagTrait {
 
     def setupSpec() {
         pageBuilder.content {

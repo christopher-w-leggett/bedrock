@@ -5,7 +5,7 @@ import com.day.cq.wcm.api.designer.Design
 
 import static com.day.cq.wcm.tags.DefineObjectsTag.DEFAULT_CURRENT_DESIGN_NAME
 
-class FavIconTagSpec extends BedrockSpec implements BedrockJspMetaTagTrait {
+class FavIconTagSpec extends BedrockSpec implements JspMetaTagTrait {
 
     static final def FAVICON = { favIcon ->
         """<link rel="icon" type="image/vnd.microsoft.icon" href="$favIcon">
