@@ -36,17 +36,23 @@ public @interface ImageInject {
 
     /**
      * Whether the image should be attempted to be resolved from the root of the resource
+     *
+     * @return true if is self
      */
     boolean isSelf() default false;
 
     /**
      * Whether to get the link via inheriting
+     *
+     * @return true if is inherited
      */
     boolean inherit() default false;
 
     /**
      * Selector to set on the injected Image object. This affects the calculated source of the image. Defaults to img as
      * this selector will trigger the OOB ImageServlet and is usually the selector you want.
+     *
+     * @return selectors
      */
     String[] selectors() default { IMG_SELECTOR };
 

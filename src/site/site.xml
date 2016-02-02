@@ -50,7 +50,6 @@
             <item name="Image Rendering" href="image-rendering.html"/>
             <item name="Including in AEM Projects" href="including-in-aem-projects.html"/>
             <item name="JavaScript" href="javascript.html"/>
-            <!--<item name="JMX" href="jmx.html"/>-->
             <item name="Links" href="links.html"/>
             <item name="Optionals" href="optionals.html"/>
             <item name="Predicates" href="predicates.html"/>
@@ -58,7 +57,6 @@
             <item name="Servlets" href="servlets.html"/>
             <item name="Sling Models Injectors" href="injectors.html"/>
             <item name="Tag Library" href="tag-library.html"/>
-            <!--<item name="Testing" href="testing.html"/>-->
         </menu>
         <menu ref="reports"/>
     </body>
