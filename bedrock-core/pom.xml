@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.citytechinc.aem.bedrock</groupId>
 		<artifactId>bedrock</artifactId>
-		<version>4.0.4</version>
+		<version>5.0.0</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -33,12 +33,8 @@
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Name>${project.name}</Bundle-Name>
 						<Bundle-Vendor>${project.parent.organization.name}</Bundle-Vendor>
-						<Export-Package>
-							!*.impl,
-							!com.citytechinc.aem.bedrock.core.specs.*,
-							com.citytechinc.aem.bedrock.core.*
-						</Export-Package>
-						<Import-Package>!javassist</Import-Package>
+						<Export-Package>!*.impl,!*.specs,com.citytechinc.aem.bedrock.core.*</Export-Package>
+						<Import-Package>!*</Import-Package>
 						<DynamicImport-Package>*</DynamicImport-Package>
 						<Require-Bundle>org.apache.sling.models.api</Require-Bundle>
 					</instructions>

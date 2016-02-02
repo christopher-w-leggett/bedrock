@@ -1,32 +1,32 @@
 package com.citytechinc.aem.bedrock.core.tags
 
+import com.citytechinc.aem.bedrock.core.specs.BedrockSpec
 import spock.lang.Unroll
 
 @Unroll
-class DescriptionTagSpec extends AbstractMetaTagSpec {
+class DescriptionTagSpec extends BedrockSpec implements JspMetaTagTrait {
 
     def setupSpec() {
         pageBuilder.content {
             citytechinc {
                 "jcr:content"("jcr:description": "JCR Description", "description": "Description")
             }
-            ctmsp {
-
-            }
+            ctmsp()
         }
     }
 
     def "description variations"() {
         setup:
         def proxy = init(DescriptionTag, "/content/citytechinc")
+        def tag = proxy.tag as DescriptionTag
 
-        proxy.tag.with {
+        tag.with {
             propertyName = testPropertyName
             suffix = testSuffix
         }
 
         when:
-        proxy.tag.doEndTag()
+        tag.doEndTag()
 
         then:
         proxy.output == html

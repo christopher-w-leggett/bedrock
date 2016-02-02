@@ -32,11 +32,15 @@ public @interface LinkInject {
 
     /**
      * The property to use for setting the title on the link
+     *
+     * @return name of title property
      */
     String titleProperty() default "";
 
     /**
      * Whether to get the link via inheriting
+     *
+     * @return true if inherited
      */
     boolean inherit() default false;
 }

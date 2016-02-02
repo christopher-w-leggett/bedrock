@@ -12,16 +12,16 @@ import static com.google.common.base.Preconditions.checkArgument
 abstract class AbstractScopedTag extends TagSupport {
 
     private static final Map<String, Integer> SCOPES = [
-        "page"       : PageContext.PAGE_SCOPE,
-        "request"    : PageContext.REQUEST_SCOPE,
-        "session"    : PageContext.SESSION_SCOPE,
+        "page": PageContext.PAGE_SCOPE,
+        "request": PageContext.REQUEST_SCOPE,
+        "session": PageContext.SESSION_SCOPE,
         "application": PageContext.APPLICATION_SCOPE
     ]
 
     /**
      * Scope of instance in page context.  Defaults to "page".
      */
-    private String scope
+    String scope
 
     /**
      * @param scope scope value
@@ -34,10 +34,15 @@ abstract class AbstractScopedTag extends TagSupport {
         checkArgument(!scope || SCOPES[scope], "scope attribute is invalid = %s, must be one of %s", scope,
             SCOPES.keySet())
 
-        doEndTag(!scope ? PageContext.PAGE_SCOPE : SCOPES[scope])
-    }
+        def result
 
-    final void setScope(String scope) {
-        this.scope = scope
+        if (scope) {
+            result = doEndTag(SCOPES[scope])
+        } else {
+            // default
+            result = doEndTag(PageContext.PAGE_SCOPE)
+        }
+
+        result
     }
 }

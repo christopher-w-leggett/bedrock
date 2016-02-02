@@ -19,7 +19,19 @@ import static org.osgi.framework.Constants.SERVICE_RANKING
  */
 abstract class BedrockModelSpec extends BedrockSpec {
 
+    /**
+     * Register default Bedrock injectors and all <code>@Model>/code>-annotated classes for the current package.
+     */
     def setupSpec() {
+        registerDefaultInjectors()
+
+        slingContext.addModelsForPackage(this.class.package.name)
+    }
+
+    /**
+     * Register the default set of Bedrock injector services.
+     */
+    void registerDefaultInjectors() {
         slingContext.with {
             registerInjectActivateService(new ComponentInjector(), [(SERVICE_RANKING): Integer.MAX_VALUE])
             registerInjectActivateService(new AdaptableInjector(), [(SERVICE_RANKING): Integer.MIN_VALUE])
@@ -31,7 +43,6 @@ abstract class BedrockModelSpec extends BedrockSpec {
             registerInjectActivateService(new ReferenceInjector(), [(SERVICE_RANKING): 4000])
             registerInjectActivateService(new ModelListInjector(), [(SERVICE_RANKING): 999])
             registerInjectActivateService(new ValueMapFromRequestInjector(), [(SERVICE_RANKING): 2500])
-            addModelsForPackage(this.class.package.name)
         }
     }
 }

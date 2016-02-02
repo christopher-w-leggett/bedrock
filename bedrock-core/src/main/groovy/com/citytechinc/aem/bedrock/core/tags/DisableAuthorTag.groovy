@@ -28,7 +28,7 @@ final class DisableAuthorTag extends TagSupport {
 
             def path = slingRequest.resource.path
 
-            LOG.debug "disabling authoring for path = {}", path
+            LOG.debug("disabling authoring for path = {}", path)
 
             slingRequest.setAttribute(ATTR_PREVIOUS_WCMMODE + path, WCMMode.fromRequest(slingRequest))
 
@@ -46,7 +46,7 @@ final class DisableAuthorTag extends TagSupport {
             def path = slingRequest.resource.path
             def mode = slingRequest.getAttribute(ATTR_PREVIOUS_WCMMODE + path) as WCMMode
 
-            LOG.debug "restoring mode = {} for path = {}", mode.name(), path
+            LOG.debug("restoring mode = {} for path = {}", mode.name(), path)
 
             mode.toRequest(slingRequest)
         }

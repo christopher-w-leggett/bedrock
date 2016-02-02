@@ -9,7 +9,7 @@ import javax.servlet.jsp.JspTagException
  * Render a page or component property value.
  */
 @Slf4j("LOG")
-final class PropertyTag extends AbstractPropertyTag {
+final class PropertyTag extends AbstractComponentTag {
 
     private static final def ESCAPER = XmlEscapers.xmlContentEscaper()
 
@@ -42,7 +42,7 @@ final class PropertyTag extends AbstractPropertyTag {
                 pageContext.out.write(value)
             }
         } catch (IOException e) {
-            LOG.error "error writing property value = $propertyName for name = ", e
+            LOG.error("error writing property value = $propertyName for name = ", e)
 
             throw new JspTagException(e)
         }

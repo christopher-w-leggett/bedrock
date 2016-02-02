@@ -8,7 +8,7 @@ import javax.servlet.jsp.JspTagException
  * Render an href attribute value for the given property name.
  */
 @Slf4j("LOG")
-final class HrefTag extends AbstractPropertyTag {
+final class HrefTag extends AbstractComponentTag {
 
     /**
      * Default value if property does not exist.
@@ -30,7 +30,7 @@ final class HrefTag extends AbstractPropertyTag {
         try {
             pageContext.out.write(href)
         } catch (IOException e) {
-            LOG.error "error writing href = $href", e
+            LOG.error("error writing href = $href", e)
 
             throw new JspTagException(e)
         }

@@ -23,7 +23,7 @@ import javax.management.openmbean.TabularType
 import java.math.RoundingMode
 import java.util.concurrent.TimeUnit
 
-@Component(immediate = true)
+@Component
 @Property(name = "jmx.objectname", value = "com.citytechinc.aem.bedrock:type=Google Guava Cache Reporting and Maintenance")
 @Service(GoogleGuavaCacheReportingAndMaintenanceMBean)
 @Slf4j("LOG")

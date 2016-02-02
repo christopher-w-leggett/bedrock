@@ -1,10 +1,11 @@
 package com.citytechinc.aem.bedrock.core.tags
 
+import com.citytechinc.aem.bedrock.core.specs.BedrockSpec
 import com.day.cq.wcm.api.designer.Design
 
 import static com.day.cq.wcm.tags.DefineObjectsTag.DEFAULT_CURRENT_DESIGN_NAME
 
-class FavIconTagSpec extends AbstractMetaTagSpec {
+class FavIconTagSpec extends BedrockSpec implements JspMetaTagTrait {
 
     static final def FAVICON = { favIcon ->
         """<link rel="icon" type="image/vnd.microsoft.icon" href="$favIcon">
@@ -46,6 +47,6 @@ class FavIconTagSpec extends AbstractMetaTagSpec {
         proxy.tag.doEndTag()
 
         then:
-        proxy.output == FAVICON("/etc/designs/citytechinc/favicon.ico")
+        proxy.output == FAVICON("/etc/designs/citytechinc/favicon.ico") as String
     }
 }
