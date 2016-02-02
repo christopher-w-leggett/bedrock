@@ -34,7 +34,7 @@
 						<Bundle-Name>${project.name}</Bundle-Name>
 						<Bundle-Vendor>${project.parent.organization.name}</Bundle-Vendor>
 						<Export-Package>!*.impl,!*.specs,com.citytechinc.aem.bedrock.core.*</Export-Package>
-						<Import-Package>!javassist</Import-Package>
+						<Import-Package>!*</Import-Package>
 						<DynamicImport-Package>*</DynamicImport-Package>
 						<Require-Bundle>org.apache.sling.models.api</Require-Bundle>
 					</instructions>
