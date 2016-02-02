@@ -26,7 +26,11 @@ class ComponentInjectorSpec extends BedrockSpec {
                 "jcr:content" {
                     component("jcr:title": "Testing Component")
                 }
-				page1 { "jcr:content" { component() } }
+				page1 {
+                    "jcr:content" {
+                        component()
+                    }
+                }
             }
         }
     }

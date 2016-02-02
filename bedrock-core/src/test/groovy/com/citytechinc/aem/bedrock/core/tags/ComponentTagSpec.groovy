@@ -1,6 +1,5 @@
 package com.citytechinc.aem.bedrock.core.tags
 
-import com.citytechinc.aem.bedrock.core.components.TestComponent
 import com.citytechinc.aem.bedrock.core.specs.BedrockSpec
 import com.citytechinc.aem.prosper.traits.JspTagTrait
 import spock.lang.Unroll
@@ -18,6 +17,8 @@ class ComponentTagSpec extends BedrockSpec implements JspTagTrait {
                 }
             }
         }
+
+        slingContext.addModelsForPackage(this.class.package.name)
     }
 
     def "get component instance"() {
@@ -26,15 +27,15 @@ class ComponentTagSpec extends BedrockSpec implements JspTagTrait {
         def tag = proxy.tag as ComponentTag
 
         tag.with {
-            className = TestComponent.class.name
-            name = "testComponent"
+            className = BedrockComponent.class.name
+            name = "bedrockComponent"
         }
 
         when:
         tag.doEndTag()
 
         then:
-        proxy.pageContext.getAttribute("testComponent") instanceof TestComponent
+        proxy.pageContext.getAttribute("bedrockComponent") instanceof BedrockComponent
     }
 
     def "get component instance with scope"() {
@@ -43,8 +44,8 @@ class ComponentTagSpec extends BedrockSpec implements JspTagTrait {
         def tag = proxy.tag as ComponentTag
 
         tag.with {
-            className = TestComponent.class.name
-            name = "testComponent"
+            className = BedrockComponent.class.name
+            name = "bedrockComponent"
             scope = testScope
         }
 
@@ -52,7 +53,7 @@ class ComponentTagSpec extends BedrockSpec implements JspTagTrait {
         tag.doEndTag()
 
         then:
-        proxy.pageContext.getAttribute("testComponent", scopeValue as Integer) instanceof TestComponent
+        proxy.pageContext.getAttribute("bedrockComponent", scopeValue as Integer) instanceof BedrockComponent
 
         where:
         testScope     | scopeValue
