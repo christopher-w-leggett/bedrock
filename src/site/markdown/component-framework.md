@@ -54,7 +54,7 @@ See the `ComponentNode` [Javadoc](http://code.citytechinc.com/bedrock/apidocs/co
 
 ### Sling Models Injectors
 
-In addition to Bedrock's component API, the framework also supplies a set of custom Sling Models injectors to support injection of common Sling and AEM objects for the current component.  See the [Injectors](/injectors.html) page for additional information.
+In addition to Bedrock's component API, the framework also supplies a set of custom Sling Models injectors to support injection of common Sling and AEM objects for the current component.  See the [Injectors](/bedrock/injectors.html) page for additional information.
 
 ### Sightly Integration
 
