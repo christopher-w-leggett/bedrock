@@ -32,7 +32,7 @@ final class DescriptionTag extends AbstractMetaTag {
 
         def description
 
-        if (hasPropertyName()) {
+        if (propertyName) {
             description = properties.get(propertyName, "")
         } else {
             description = properties.get(JcrConstants.JCR_DESCRIPTION, "")

@@ -9,7 +9,7 @@ import javax.servlet.jsp.JspTagException
  * Render a page or component property value.
  */
 @Slf4j("LOG")
-final class PropertyTag extends AbstractComponentTag implements PropertyTagTrait {
+final class PropertyTag extends AbstractComponentTag {
 
     private static final def ESCAPER = XmlEscapers.xmlContentEscaper()
 

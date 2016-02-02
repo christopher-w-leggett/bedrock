@@ -8,7 +8,7 @@ import javax.servlet.jsp.JspTagException
  * Render an href attribute value for the given property name.
  */
 @Slf4j("LOG")
-final class HrefTag extends AbstractComponentTag implements PropertyTagTrait {
+final class HrefTag extends AbstractComponentTag {
 
     /**
      * Default value if property does not exist.

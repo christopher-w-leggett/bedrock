@@ -26,8 +26,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.name}</Bundle-Name>
                         <Bundle-Vendor>${project.parent.organization.name}</Bundle-Vendor>
-                        <Export-Package>!*.impl,com.citytechinc.aem.bedrock.models.annotations.*</Export-Package>
-                        <Import-Package>!javassist</Import-Package>
+                        <Export-Package>!*.impl,!*.specs,com.citytechinc.aem.bedrock.models.*</Export-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
                         <Require-Bundle>org.apache.sling.models.api</Require-Bundle>
                     </instructions>

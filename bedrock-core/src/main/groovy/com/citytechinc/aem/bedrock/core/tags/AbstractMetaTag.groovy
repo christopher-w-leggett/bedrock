@@ -6,7 +6,7 @@ import com.day.cq.widget.Doctype
 import static com.day.cq.wcm.tags.DefineObjectsTag.DEFAULT_XSSAPI_NAME
 
 @SuppressWarnings("deprecation")
-abstract class AbstractMetaTag extends AbstractComponentTag implements PropertyTagTrait {
+abstract class AbstractMetaTag extends AbstractComponentTag {
 
     protected final String getTagEnd() {
         def builder = new StringBuilder()
