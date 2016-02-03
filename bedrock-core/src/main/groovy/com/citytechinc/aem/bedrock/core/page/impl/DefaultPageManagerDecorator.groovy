@@ -59,8 +59,6 @@ class DefaultPageManagerDecorator implements PageManagerDecorator {
             }
         }
 
-        stopwatch.stop()
-
         LOG.debug("found {} result(s) in {}ms", pages.size(), stopwatch.elapsed(MILLISECONDS))
 
         pages

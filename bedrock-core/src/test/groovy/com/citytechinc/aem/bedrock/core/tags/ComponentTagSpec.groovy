@@ -1,13 +1,13 @@
 package com.citytechinc.aem.bedrock.core.tags
 
-import com.citytechinc.aem.bedrock.core.components.TestComponent
 import com.citytechinc.aem.bedrock.core.specs.BedrockSpec
+import com.citytechinc.aem.prosper.traits.JspTagTrait
 import spock.lang.Unroll
 
 import javax.servlet.jsp.PageContext
 
 @Unroll
-class ComponentTagSpec extends BedrockSpec {
+class ComponentTagSpec extends BedrockSpec implements JspTagTrait {
 
     def setupSpec() {
         pageBuilder.content {
@@ -17,39 +17,43 @@ class ComponentTagSpec extends BedrockSpec {
                 }
             }
         }
+
+        slingContext.addModelsForPackage(this.class.package.name)
     }
 
     def "get component instance"() {
         setup:
         def proxy = init(ComponentTag, "/content/home/jcr:content/component")
+        def tag = proxy.tag as ComponentTag
 
-        proxy.tag.with {
-            className = TestComponent.class.name
-            name = "testComponent"
+        tag.with {
+            className = BedrockComponent.class.name
+            name = "bedrockComponent"
         }
 
         when:
-        proxy.tag.doEndTag()
+        tag.doEndTag()
 
         then:
-        proxy.pageContext.getAttribute("testComponent") instanceof TestComponent
+        proxy.pageContext.getAttribute("bedrockComponent") instanceof BedrockComponent
     }
 
     def "get component instance with scope"() {
         setup:
         def proxy = init(ComponentTag, "/content/home/jcr:content/component")
+        def tag = proxy.tag as ComponentTag
 
-        proxy.tag.with {
-            className = TestComponent.class.name
-            name = "testComponent"
+        tag.with {
+            className = BedrockComponent.class.name
+            name = "bedrockComponent"
             scope = testScope
         }
 
         when:
-        proxy.tag.doEndTag()
+        tag.doEndTag()
 
         then:
-        proxy.pageContext.getAttribute("testComponent", scopeValue) instanceof TestComponent
+        proxy.pageContext.getAttribute("bedrockComponent", scopeValue as Integer) instanceof BedrockComponent
 
         where:
         testScope     | scopeValue

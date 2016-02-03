@@ -29,7 +29,7 @@ final class KeywordsTag extends AbstractMetaTag {
         try {
             pageContext.out.write(builder.toString())
         } catch (IOException e) {
-            LOG.error "error writing keywords tag for page = ${currentPage.path}", e
+            LOG.error("error writing keywords tag for page = ${currentPage.path}", e)
 
             throw new JspTagException(e)
         }

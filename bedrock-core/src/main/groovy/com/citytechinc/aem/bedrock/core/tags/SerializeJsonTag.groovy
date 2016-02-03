@@ -41,7 +41,7 @@ final class SerializeJsonTag extends AbstractComponentInstanceTag {
             def object
 
             if (className) {
-                LOG.debug "serializing JSON for class name = {}", className
+                LOG.debug("serializing JSON for class name = {}", className)
 
                 object = getInstance(className)
 
@@ -49,14 +49,14 @@ final class SerializeJsonTag extends AbstractComponentInstanceTag {
                     pageContext.setAttribute(name, object, scope)
                 }
             } else {
-                LOG.debug "serializing JSON for instance name = {}", instanceName
+                LOG.debug("serializing JSON for instance name = {}", instanceName)
 
                 object = pageContext.getAttribute(instanceName, scope)
             }
 
             pageContext.out.write(MAPPER.writeValueAsString(object))
         } catch (IOException e) {
-            LOG.error "error serializing JSON", e
+            LOG.error("error serializing JSON", e)
 
             throw new JspTagException(e)
         }

@@ -26,7 +26,7 @@ final class TitleTag extends AbstractMetaTag {
 
         def title = new StringBuilder()
 
-        if (hasPropertyName()) {
+        if (propertyName) {
             title.append(currentPage.properties.get(propertyName, pageTitle))
         } else {
             title.append(pageTitle)
@@ -45,7 +45,7 @@ final class TitleTag extends AbstractMetaTag {
         try {
             pageContext.out.write(builder.toString())
         } catch (IOException e) {
-            LOG.error "error writing title tag", e
+            LOG.error("error writing title tag", e)
 
             throw new JspTagException(e)
         }

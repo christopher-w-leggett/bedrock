@@ -41,13 +41,13 @@ final class FavIconTag extends AbstractMetaTag {
 
             try {
                 pageContext.out.write(html.toString())
-            } catch (IOException ioe) {
-                LOG.error "error writing favicon", ioe
+            } catch (IOException e) {
+                LOG.error("error writing favicon", e)
 
-                throw new JspTagException(ioe)
+                throw new JspTagException(e)
             }
         } else {
-            LOG.debug "favicon is null, skipping output"
+            LOG.debug("favicon is null, skipping output")
         }
 
         EVAL_PAGE

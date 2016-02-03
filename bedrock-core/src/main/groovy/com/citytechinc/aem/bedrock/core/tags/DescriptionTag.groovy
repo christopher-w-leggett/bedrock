@@ -32,7 +32,7 @@ final class DescriptionTag extends AbstractMetaTag {
 
         def description
 
-        if (hasPropertyName()) {
+        if (propertyName) {
             description = properties.get(propertyName, "")
         } else {
             description = properties.get(JcrConstants.JCR_DESCRIPTION, "")
@@ -52,10 +52,10 @@ final class DescriptionTag extends AbstractMetaTag {
 
         try {
             pageContext.out.write(builder.toString())
-        } catch (IOException ioe) {
-            LOG.error "error writing description tag for page = ${currentPage.path}", ioe
+        } catch (IOException e) {
+            LOG.error("error writing description tag for page = ${currentPage.path}", e)
 
-            throw new JspTagException(ioe)
+            throw new JspTagException(e)
         }
 
         EVAL_PAGE

@@ -14,7 +14,7 @@ final class IncludeDeferredClientLibTag extends AbstractDeferredClientLibTag {
 
         categories.addAll(this.categories)
 
-        LOG.debug "client libraries for request = {}", categories
+        LOG.debug("client libraries for request = {}", categories)
 
         pageContext.setAttribute(ATTR_CATEGORIES, categories.join(","), REQUEST_SCOPE)
 

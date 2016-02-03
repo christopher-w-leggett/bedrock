@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  * Listeners extending this class need to add the following SCR annotations to register the listener.
  * <p>
  * <pre>
- * {@literal @}Component(immediate = true, metatype = true, inherit = true)
+ * {@literal @}Component(metatype = true)
  * {@literal @}Service
  * {@literal @}Property(name = EventConstants.EVENT_TOPIC, value = ReplicationAction.EVENT_TOPIC)
  * </pre>

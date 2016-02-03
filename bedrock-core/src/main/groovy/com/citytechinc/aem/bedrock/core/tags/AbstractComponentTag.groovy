@@ -10,21 +10,22 @@ import static org.apache.sling.scripting.jsp.taglib.DefineObjectsTag.DEFAULT_RES
 abstract class AbstractComponentTag extends TagSupport {
 
     /**
+     * Property name for tag.
+     */
+    String propertyName
+
+    /**
      * Should property value be inherited? Defaults to false.
      */
-    private String inherit
+    String inherit
 
-    final void setInherit(String inherit) {
-        this.inherit = inherit
-    }
-
-    protected final ComponentNode getComponentNode() {
+    protected ComponentNode getComponentNode() {
         def resource = pageContext.getAttribute(DEFAULT_RESOURCE_NAME) as Resource
 
         resource.adaptTo(ComponentNode)
     }
 
-    protected final boolean isInherit() {
+    protected boolean isInherit() {
         Boolean.valueOf(inherit)
     }
 }

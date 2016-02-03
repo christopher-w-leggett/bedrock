@@ -1,9 +1,10 @@
 package com.citytechinc.aem.bedrock.core.tags
 
+import com.citytechinc.aem.bedrock.core.specs.BedrockSpec
 import spock.lang.Unroll
 
 @Unroll
-class TitleTagSpec extends AbstractMetaTagSpec {
+class TitleTagSpec extends BedrockSpec implements JspMetaTagTrait {
 
     def setupSpec() {
         pageBuilder.content {
@@ -19,14 +20,15 @@ class TitleTagSpec extends AbstractMetaTagSpec {
     def "title variations"() {
         setup:
         def proxy = init(TitleTag, "/content/citytechinc")
+        def tag = proxy.tag as TitleTag
 
-        proxy.tag.with {
+        tag.with {
             propertyName = testPropertyName
             suffix = testSuffix
         }
 
         when:
-        proxy.tag.doEndTag()
+        tag.doEndTag()
 
         then:
         proxy.output == html
