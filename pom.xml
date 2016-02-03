@@ -19,11 +19,6 @@
         <url>http://www.citytechinc.com</url>
     </organization>
 
-    <issueManagement>
-        <system>GitHub</system>
-        <url>https://github.com/Citytechinc/bedrock/issues</url>
-    </issueManagement>
-
     <url>http://code.citytechinc.com/bedrock</url>
 
     <modules>
