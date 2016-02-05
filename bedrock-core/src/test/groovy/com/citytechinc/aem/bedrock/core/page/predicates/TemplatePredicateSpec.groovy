@@ -29,9 +29,10 @@ class TemplatePredicateSpec extends BedrockSpec {
         setup:
         def page = getPage("/content/citytechinc/child1")
         def predicate = new TemplatePredicate("template")
+        def predicateForPage = new TemplatePredicate(page)
 
         expect:
-        predicate.apply(page)
+        predicate.apply(page) && predicateForPage.apply(page)
     }
 
     def "template does not match page template"() {
