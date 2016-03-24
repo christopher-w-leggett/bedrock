@@ -59,11 +59,8 @@ class DefaultBasicNodeSpec extends BedrockSpec {
                 "image-renditions"("dam:Asset") { "jcr:content"("jcr:data": "data") }
             }
         }
-    }
 
-    @Override
-    Map<Class, Closure> addResourceAdapters() {
-        [(Asset.class): { Resource resource ->
+        slingContext.registerResourceAdapter(Asset, { Resource resource ->
             def asset = null
 
             if (resource.path == "/content/dam/image-renditions") {
@@ -77,7 +74,7 @@ class DefaultBasicNodeSpec extends BedrockSpec {
             }
 
             asset
-        }]
+        })
     }
 
     def "to string"() {
@@ -190,7 +187,7 @@ class DefaultBasicNodeSpec extends BedrockSpec {
         def node = getBasicNode("/content/citytechinc/jcr:content")
 
         expect:
-        node.getAsHref("otherPagePath", false, true).get() == "/content/ales/esb.html"
+        node.getAsHref("otherPagePath", false, true).get() == "/ales/esb.html"
     }
 
     def "get as mapped href strict"() {
@@ -202,8 +199,8 @@ class DefaultBasicNodeSpec extends BedrockSpec {
 
         where:
         propertyName          | href
-        "otherPagePath"       | "/content/ales/esb.html"
-        "nonExistentPagePath" | "/content/home"
+        "otherPagePath"       | "/ales/esb.html"
+        "nonExistentPagePath" | "/home"
         "externalPath"        | "http://www.reddit.com"
     }
 
@@ -238,7 +235,7 @@ class DefaultBasicNodeSpec extends BedrockSpec {
         def link = getBasicNode("/content/citytechinc/jcr:content").getAsLink("otherPagePath", false, true).get()
 
         expect:
-        link.path == "/content/ales/esb"
+        link.path == "/ales/esb"
     }
 
     def "get as mapped link strict"() {
@@ -246,7 +243,7 @@ class DefaultBasicNodeSpec extends BedrockSpec {
         def link = getBasicNode("/content/citytechinc/jcr:content").getAsLink("nonExistentPagePath", true, true).get()
 
         expect:
-        link.path == "/content/home"
+        link.path == "/home"
         link.external
         link.extension == ""
     }

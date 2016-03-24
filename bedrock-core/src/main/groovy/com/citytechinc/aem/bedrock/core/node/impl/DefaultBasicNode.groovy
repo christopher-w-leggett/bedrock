@@ -261,7 +261,7 @@ final class DefaultBasicNode extends AbstractNode implements BasicNode {
 
     @Override
     Link getLink(boolean mapped) {
-        getLinkBuilder(true).build()
+        getLinkBuilder(mapped).build()
     }
 
     @Override
