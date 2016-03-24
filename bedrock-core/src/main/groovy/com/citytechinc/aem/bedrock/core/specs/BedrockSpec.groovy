@@ -17,7 +17,7 @@ abstract class BedrockSpec extends ProsperSpec {
     PageManagerDecorator pageManagerDecorator
 
     def setupSpec() {
-        slingContext.registerAdapterFactory(new BedrockAdapterFactory(), BedrockAdapterFactory.ADAPTABLE_CLASSES,
+        registerAdapterFactory(new BedrockAdapterFactory(), BedrockAdapterFactory.ADAPTABLE_CLASSES,
             BedrockAdapterFactory.ADAPTER_CLASSES)
 
         pageManagerDecorator = resourceResolver.adaptTo(PageManagerDecorator)

@@ -24,10 +24,8 @@ class AdaptableInjectorSpec extends BedrockSpec {
     }
 
     def setupSpec() {
-        slingContext.with {
-            registerInjectActivateService(new AdaptableInjector(), [(SERVICE_RANKING): Integer.MIN_VALUE])
-            addModelsForPackage(this.class.package.name)
-        }
+        registerInjectActivateService(new AdaptableInjector(), [(SERVICE_RANKING): Integer.MIN_VALUE])
+        addModelsForPackage(this.class.package.name)
     }
 
     def "get value returns null for invalid adapter type"() {

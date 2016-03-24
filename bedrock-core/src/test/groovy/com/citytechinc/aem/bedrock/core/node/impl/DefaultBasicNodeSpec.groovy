@@ -60,7 +60,7 @@ class DefaultBasicNodeSpec extends BedrockSpec {
             }
         }
 
-        slingContext.registerResourceAdapter(Asset, { Resource resource ->
+        registerResourceAdapter(Asset, { Resource resource ->
             def asset = null
 
             if (resource.path == "/content/dam/image-renditions") {

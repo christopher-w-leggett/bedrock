@@ -18,7 +18,7 @@ class ComponentTagSpec extends BedrockSpec implements JspTagTrait {
             }
         }
 
-        slingContext.addModelsForPackage(this.class.package.name)
+        addModelsForPackage(this.class.package.name)
     }
 
     def "get component instance"() {

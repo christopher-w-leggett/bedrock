@@ -25,24 +25,22 @@ abstract class BedrockModelSpec extends BedrockSpec {
     def setupSpec() {
         registerDefaultInjectors()
 
-        slingContext.addModelsForPackage(this.class.package.name)
+        addModelsForPackage(this.class.package.name)
     }
 
     /**
      * Register the default set of Bedrock injector services.
      */
     void registerDefaultInjectors() {
-        slingContext.with {
-            registerInjectActivateService(new ComponentInjector(), [(SERVICE_RANKING): Integer.MAX_VALUE])
-            registerInjectActivateService(new AdaptableInjector(), [(SERVICE_RANKING): Integer.MIN_VALUE])
-            registerInjectActivateService(new TagInjector(), [(SERVICE_RANKING): 800])
-            registerInjectActivateService(new EnumInjector(), [(SERVICE_RANKING): 4000])
-            registerInjectActivateService(new ImageInjector(), [(SERVICE_RANKING): 4000])
-            registerInjectActivateService(new InheritInjector(), [(SERVICE_RANKING): 4000])
-            registerInjectActivateService(new LinkInjector(), [(SERVICE_RANKING): 4000])
-            registerInjectActivateService(new ReferenceInjector(), [(SERVICE_RANKING): 4000])
-            registerInjectActivateService(new ModelListInjector(), [(SERVICE_RANKING): 999])
-            registerInjectActivateService(new ValueMapFromRequestInjector(), [(SERVICE_RANKING): 2500])
-        }
+        registerInjectActivateService(new ComponentInjector(), [(SERVICE_RANKING): Integer.MAX_VALUE])
+        registerInjectActivateService(new AdaptableInjector(), [(SERVICE_RANKING): Integer.MIN_VALUE])
+        registerInjectActivateService(new TagInjector(), [(SERVICE_RANKING): 800])
+        registerInjectActivateService(new EnumInjector(), [(SERVICE_RANKING): 4000])
+        registerInjectActivateService(new ImageInjector(), [(SERVICE_RANKING): 4000])
+        registerInjectActivateService(new InheritInjector(), [(SERVICE_RANKING): 4000])
+        registerInjectActivateService(new LinkInjector(), [(SERVICE_RANKING): 4000])
+        registerInjectActivateService(new ReferenceInjector(), [(SERVICE_RANKING): 4000])
+        registerInjectActivateService(new ModelListInjector(), [(SERVICE_RANKING): 999])
+        registerInjectActivateService(new ValueMapFromRequestInjector(), [(SERVICE_RANKING): 2500])
     }
 }

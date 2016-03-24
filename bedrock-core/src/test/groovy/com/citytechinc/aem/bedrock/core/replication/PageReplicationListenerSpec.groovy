@@ -30,7 +30,7 @@ class PageReplicationListenerSpec extends BedrockSpec {
             }
         }
 
-        slingContext.registerResourceAdapter(ReplicationStatus, { Resource resource ->
+        registerResourceAdapter(ReplicationStatus, { Resource resource ->
             def pagePath = PathUtils.getPagePath(resource.path)
             def status
 
