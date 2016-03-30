@@ -29,7 +29,7 @@ class ValueMapFromRequestInjectorSpec extends BedrockModelSpec {
             }
         }
 
-        registerInjectActivateService(new ValueMapFromRequestInjector())
+        slingContext.registerInjectActivateService(new ValueMapFromRequestInjector())
     }
 
     def "inject values for component"() {

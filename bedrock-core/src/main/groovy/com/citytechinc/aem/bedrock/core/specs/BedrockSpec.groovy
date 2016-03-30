@@ -5,22 +5,15 @@ import com.citytechinc.aem.bedrock.api.page.PageDecorator
 import com.citytechinc.aem.bedrock.api.page.PageManagerDecorator
 import com.citytechinc.aem.bedrock.core.adapter.BedrockAdapterFactory
 import com.citytechinc.aem.prosper.specs.ProsperSpec
-import org.apache.sling.api.adapter.AdapterFactory
-import spock.lang.Shared
 
 /**
  * Spock specification for testing Bedrock-based components and services.
  */
 abstract class BedrockSpec extends ProsperSpec {
 
-    @Shared
-    PageManagerDecorator pageManagerDecorator
-
     def setupSpec() {
-        registerAdapterFactory(new BedrockAdapterFactory(), BedrockAdapterFactory.ADAPTABLE_CLASSES,
+        slingContext.registerAdapterFactory(new BedrockAdapterFactory(), BedrockAdapterFactory.ADAPTABLE_CLASSES,
             BedrockAdapterFactory.ADAPTER_CLASSES)
-
-        pageManagerDecorator = resourceResolver.adaptTo(PageManagerDecorator)
     }
 
     ComponentNode getComponentNode(String path) {
@@ -29,11 +22,11 @@ abstract class BedrockSpec extends ProsperSpec {
 
     @Override
     PageDecorator getPage(String path) {
-        pageManagerDecorator.getPage(path)
+        pageManager.getPage(path)
     }
 
     @Override
     PageManagerDecorator getPageManager() {
-        pageManagerDecorator
+        resourceResolver.adaptTo(PageManagerDecorator)
     }
 }
