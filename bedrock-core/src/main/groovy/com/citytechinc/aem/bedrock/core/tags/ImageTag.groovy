@@ -20,14 +20,7 @@ final class ImageTag extends AbstractComponentTag {
     @Override
     int doEndTag() {
         def resource = componentNode.resource
-
-        def image
-
-        if (name) {
-            image = new Image(resource, name)
-        } else {
-            image = new Image(resource)
-        }
+        def image = name ? new Image(resource, name) : new Image(resource)
 
         if (alt) {
             image.alt = alt
@@ -36,8 +29,6 @@ final class ImageTag extends AbstractComponentTag {
         if (title) {
             image.title = title
         }
-
-        image.href = ""
 
         if (image.hasContent()) {
             try {

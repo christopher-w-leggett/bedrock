@@ -15,23 +15,8 @@ class PageReplicationListenerSpec extends BedrockSpec {
 
     static final def STATUS_INACTIVE = [isActivated: { false }] as ReplicationStatus
 
-    @Shared listener
-
-    @Override
-    Map<Class, Closure> addResourceAdapters() {
-        [(ReplicationStatus): { Resource resource ->
-            def pagePath = PathUtils.getPagePath(resource.path)
-            def status
-
-            if (pagePath.startsWith("/content/home/active1")) {
-                status = STATUS_ACTIVE
-            } else {
-                status = STATUS_INACTIVE
-            }
-
-            status
-        }]
-    }
+    @Shared
+    PageReplicationListener listener
 
     def setupSpec() {
         pageBuilder.content {
@@ -44,6 +29,19 @@ class PageReplicationListenerSpec extends BedrockSpec {
                 }
             }
         }
+
+        slingContext.registerResourceAdapter(ReplicationStatus, { Resource resource ->
+            def pagePath = PathUtils.getPagePath(resource.path)
+            def status
+
+            if (pagePath.startsWith("/content/home/active1")) {
+                status = STATUS_ACTIVE
+            } else {
+                status = STATUS_INACTIVE
+            }
+
+            status
+        })
     }
 
     def setup() {

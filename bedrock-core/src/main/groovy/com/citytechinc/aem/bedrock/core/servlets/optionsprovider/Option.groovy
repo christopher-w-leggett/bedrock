@@ -31,7 +31,7 @@ class Option {
      * @param map map where key=[option value] and value=[option text]
      * @list of options created from map
      */
-    static List<Option> fromMap(Map<String, String> map) {
+    public static List<Option> fromMap(Map<String, String> map) {
         map.collect { value, text -> new Option(value, text) } as List
     }
 }

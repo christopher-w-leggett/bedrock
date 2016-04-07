@@ -127,4 +127,8 @@ public final class LinkBuilderFactory {
 
         return result;
     }
+
+    private LinkBuilderFactory() {
+
+    }
 }
