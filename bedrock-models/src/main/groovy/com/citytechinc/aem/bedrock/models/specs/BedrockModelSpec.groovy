@@ -14,6 +14,8 @@ import com.citytechinc.aem.bedrock.models.impl.TagInjector
 import com.citytechinc.aem.bedrock.models.impl.TranslatorInjector
 import com.citytechinc.aem.bedrock.models.impl.ValueMapFromRequestInjector
 
+import static org.osgi.framework.Constants.SERVICE_RANKING
+
 /**
  * Specs may extend this class to support injection of Bedrock dependencies in Sling model-based components.
  */
@@ -43,7 +45,7 @@ abstract class BedrockModelSpec extends BedrockSpec {
             registerInjector(new ReferenceInjector(), 4000)
             registerInjector(new ModelListInjector(), 999)
             registerInjector(new ValueMapFromRequestInjector(), 2500)
-            registerInjectActivateService(new DefaultLocaleResolver())
+            registerInjectActivateService(new DefaultLocaleResolver(), [(SERVICE_RANKING): 4000])
             registerInjector(new TranslatorInjector(), 4000)
         }
     }
