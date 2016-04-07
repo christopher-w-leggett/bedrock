@@ -62,12 +62,8 @@ class TranslatorInjectorSpec extends BedrockModelSpec {
             }
         }
 
-        //NOTE: TranslatorInjector uses ServiceReference natural ordering to determine correct services to use.
-        //There is a defect in the MockServiceReference of the sling testing library that does not perform correct ordering.
-        //Because of this  we can't successfully test the service reference ordering through this spec.
-        //For now, just setting custom resolver to max value to satisfy test.
         slingContext.with {
-            registerService(LocaleResolver, new CustomLocaleResolver(), ["resolver.name": "custom", (SERVICE_RANKING): Integer.MAX_VALUE])
+            registerService(LocaleResolver, new CustomLocaleResolver(), ["resolver.name": "custom", (SERVICE_RANKING): Integer.MIN_VALUE])
             registerService(ResourceBundleProvider, new MockResourceBundleProvider("/apps/citytechinc/i18n", resourceResolver), [:])
         }
     }
